@@ -108,10 +108,10 @@
 
 #### 14.建立远程仓库
 
-1. `ssh-keygen -t -rsa -C “youremail@example.com”`用于创建SSH Key。在用户主目录下，会有一个.ssh目录，其内有`id_rsa`与`id_rsa.pub`两个文件。`id_rsa`是私钥，不能泄露，`id_rsa.pub`是公钥，可以告诉他人。
+1. `ssh-keygen -t rsa -C “youremail@example.com”`用于创建SSH Key。在用户主目录下，会有一个.ssh目录，其内有`id_rsa`与`id_rsa.pub`两个文件。`id_rsa`是私钥，不能泄露，`id_rsa.pub`是公钥，可以告诉他人。
 2. 登陆GitHub，打开设置添加SSH Keys，将`id_rsa.pub`的公钥添加
 
-#### 15.添加远程库
+#### 15.添加远程库、从远程库克隆
 
 1. 在GitHub建立新的repository，在本地仓库下运行命令：
 
@@ -132,6 +132,8 @@
    `git push origin master`
 
    进行将本地`master`分支的最新修改推送至GitHub
+   
+4. 使用`git clone git@github.com:canhoifung/<repository>`进行克隆操作
 
 #### 16.查看当前工作目录下的内容
 
