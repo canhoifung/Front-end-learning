@@ -1,4 +1,5 @@
 # Promise对象
+
 **Promise对象有三种状态**,分别是:  
 1. pending:等待中,或进行中,表示还没有得到结果;  
 2. resolved(Fulfilled):已经完美,表示得到了我们想要的结果,可以继续往下执行;  

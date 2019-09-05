@@ -1,5 +1,5 @@
-
 # DOM节点操作
+
 ## 创建DOM节点
 ```JavaScript
 var oDiv=document.createElement("div"); //元素节点
@@ -55,7 +55,7 @@ nodeValue;  //用于得到与设置一个节点的值;
  <div id="d3">第三个div</div>
 </div>
 ```
-![DOM节点关系](images/20190326152354261_1134.png =529x)  
+![DOM节点关系](images/20190326152354261_1134.png)  
 1. parentNode  用于获取元素的父元素  
 2. childNodes   用于获取任何一个元素的所有子元素  
 3. firstChild      第一个子元素  
