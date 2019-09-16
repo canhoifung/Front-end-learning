@@ -18,6 +18,7 @@ new Promise(function(resolve, reject) {
 
 # Promise对象的then方法
 **then方法**可以接收构造函数中处理的状态变化，并分别对应执行。  
+
 then方法有2个参数，第一个函数接收resolved状态的执行，第二个参数接收reject状态的执行。  
 
 ```JavaScript

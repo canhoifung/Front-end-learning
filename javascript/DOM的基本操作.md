@@ -8,12 +8,14 @@ var attr=document.createAttribute("style"); //属性节点
 ```
 
 ## 插入DOM节点
+
 ```JavaScript
 appendChild();
 insertBefore(a,b);  //a为插入的新元素,b为插入位置
 ```
 
 ## 删除DOM节点
+
 ```JavaScript
 removeChild();
 removeAttribute();
