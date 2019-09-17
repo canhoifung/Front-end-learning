@@ -151,6 +151,17 @@ swift.prev('.dy'); // Python，因为Python同时符合过滤器条件.dy
 
 #### 过滤
 
+```html
+<!-- HTML结构 -->
+<ul class="lang">
+    <li class="js dy">JavaScript</li>
+    <li class="dy">Python</li>
+    <li id="swift">Swift</li>
+    <li class="dy">Scheme</li>
+    <li name="haskell">Haskell</li>
+</ul>
+```
+
 1. `filter()`
 
 ```javascript
@@ -721,5 +732,154 @@ var jqxhr = $.ajax('/api/categories', {
 }).always(function () {
     ajaxLog('请求完成: 无论成功或失败都会调用');
 });
+```
+
+### `get()`
+
+```javascript
+var jqxhr = $.get('/path/to/resource', {
+    name: 'Bob Lee',
+    check: 1
+});
+```
+
+第二个参数为object，jQuery自动将其变为query string：
+
+```javascript
+/path/to/resource?name=Bob%20Lee&check=1
+```
+
+### `get()`
+
+与`get()`类似，但第二个参数默认被序列化为`application/x-www-form-urlencoded`：
+
+```javascript
+var jqxhr = $.post('/path/to/resource', {
+    name: 'Bob Lee',
+    check: 1
+});
+```
+
+构造的数据`Bob%20Lee&check=1`作为POST的body被发送
+
+### `getJSON()`
+
+```javascript
+var jqxhr = $.getJSON('/path/to/resource', {
+    name: 'Bob Lee',
+    check: 1
+}).done(function (data) {
+    // data已经被解析为JSON对象了
+});
+```
+
+通过GET获得一个JSON对象
+
+### 安全限制
+
+要使用JSONP，在`ajax()`中设置`jsonp:'callback'`
+
+##　扩展
+
+### 编写jQuery插件
+
+通过扩展`$.fn`对象为jQuery绑定新方法：
+
+```javascript
+//编写扩展函数 highlight()
+$.fn.highlight = function(){
+    // this已绑定为当前jQuery对象:
+    this.css('backgroundColor', '#fffceb').css('color', '#d85030');
+    //return this是因为jQuery对象支持链式操作，方便使用扩展后继续使用链式
+    return this;
+}
+```
+
+```javascript
+$.fn.highlight2 = function (options) {
+    // 要考虑到各种情况:
+    // options为undefined
+    // options只有部分key
+    var bgcolor = options && options.backgroundColor || '#fffceb';
+    var color = options && options.color || '#d85030';
+    this.css('backgroundColor', bgcolor).css('color', color);
+    return this;
+}
+```
+
+辅助方法：`$.extend(target,obj1,obj2,...)`:
+
+将多个object对象的属性合并到第一个target对象中，遇到同名属性，总是使用靠后的对象的值：
+
+```javascript
+// 把默认值和用户传入的options合并到对象{}中并返回:
+var opts = $.extend({}, {
+    backgroundColor: '#00a8e6',
+    color: '#ffffff'
+}, options);
+```
+
+可以设定默认值：
+
+```javascript
+$.fn.highlight = function (options) {
+    // 合并默认值和用户设定值:
+    var opts = $.extend({}, $.fn.highlight.defaults, options);
+    this.css('backgroundColor', opts.backgroundColor).css('color', opts.color);
+    return this;
+}
+
+// 设定默认值:
+$.fn.highlight.defaults = {
+    color: '#d85030',
+    backgroundColor: '#fff8de'
+}
+```
+
+==编写jQuery插件的原则：==
+
+1. 给`$.fn`绑定函数，实现插件的代码逻辑；
+2. 插件函数最后要`return this;`以支持链式调用；
+3. 插件函数要有默认值，绑定在`$.fn.<pluginName>.defaults`上；
+4. 用户在调用时可传入设定值以便覆盖默认值。
+
+### 针对特定元素的扩展
+
+例子：为指向外链的超链接加上跳转提示
+
+```javascript
+$.fn.external = function () {
+    // return返回的each()返回结果，支持链式调用:
+    return this.filter('a').each(function () {
+        // 注意: each()内部的回调函数的this绑定为DOM本身!
+        var a = $(this);
+        var url = a.attr('href');
+        if (url && (url.indexOf('http://')===0 || url.indexOf('https://')===0)) {
+            //将href='#0'，使用户点击链接无法直接跳转到该地址
+            a.attr('href', '#0')
+            //去除 target = '_blank' ，取消点击链接打开一个浏览器空白窗口
+             .removeAttr('target')
+             .append(' <i class="uk-icon-external-link"></i>')
+             .click(function () {
+                if(confirm('你确定要前往' + url + '？')) {
+                    window.open(url);
+                }
+            });
+        }
+    });
+}
+```
+
+```html
+<!-- HTML结构 -->
+<div id="test-external">
+    <p>如何学习<a href="http://jquery.com">jQuery</a>？</p>
+    <p>首先，你要学习<a href="/wiki/1022910821149312">JavaScript</a>，并了解基本的<a href="https://developer.mozilla.org/en-US/docs/Web/HTML">HTML</a>。</p>
+</div>
+```
+
+```javascript
+//调用：
+$('#test-external a').external();
 ```
 
