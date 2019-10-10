@@ -1,4 +1,63 @@
-# `RegExp`正则
+# `RegExp`对象
+
+新建正则表达式的两种方式：
+
+1. 使用字面量，以斜杠表示开始和结束
+2. 使用`RegExp`构造函数
+
+```javascript
+var regex = /xyz/;
+//等价于
+var regex = new RegExp('xyz');
+```
+
+> 第一种方法在引擎编译代码时新建正则表达式
+>
+> 第二种方法在运行时新建正则表达式
+>
+> 因而第一种方法效率更高
+
+构造函数还可以接收第二个参数，表示修饰符
+
+```javascript
+var regex = new RegExp('xyz', 'i');
+// 等价于
+var regex = /xyz/i;
+```
+
+## 实例属性
+
+1. 与修饰符相关，用于了解设置了什么修饰符的实例属性
+
+- `RegExp.prototype.ignoreCase`：返回一个布尔值，表示是否设置了`i`修饰符。
+- `RegExp.prototype.global`：返回一个布尔值，表示是否设置了`g`修饰符。
+- `RegExp.prototype.multiline`：返回一个布尔值，表示是否设置了`m`修饰符。
+- `RegExp.prototype.flags`：返回一个字符串，包含了已经设置的所有修饰符，按字母排序
+
+都是只读属性
+
+```javascript
+var r = /abc/igm;
+
+r.ignoreCase // true
+r.global // true
+r.multiline // true
+r.flags // 'gim'
+```
+
+2. 与修饰符无关的属性
+
+- `RegExp.prototype.lastIndex`：返回一个整数，表示下一次开始搜索的位置。该属性可读写，但是只在进行连续搜索时有意义，详细介绍请看后文。
+- `RegExp.prototype.source`：返回正则表达式的字符串形式（不包括反斜杠），该属性只读。
+
+```javascript
+var r = /abc/igm;
+
+r.lastIndex // 0
+r.source // "abc"
+```
+
+
 
 用于匹配字符串。
 
