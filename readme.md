@@ -22,7 +22,7 @@
 
 ## 标准库
 
-[Object对象](javascript/Object对象)
+[Object对象](javascript/Object对象.md)
 
 [属性描述对象](javascript/属性描述对象)
 
