@@ -1,6 +1,9 @@
+[TOC]
+
 # DOM节点操作
 
 ## 创建DOM节点
+
 ```JavaScript
 var oDiv=document.createElement("div"); //元素节点
 var p=document.createTextNode("hello");  //文本节点
@@ -41,6 +44,7 @@ setAttribute(attribute,value);  //设置属性
 ```
 
 ## 查询节点类型
+
 ```JavaScript
 nodeType;   //元素节点  返回1;属性节点  返回2;文本节点  返回3;
 nodeName;   //元素节点  返回标签名;属性节点  返回属性名;
@@ -50,6 +54,7 @@ nodeValue;  //用于得到与设置一个节点的值;
 ```
 
 ## DOM节点间关系
+
 ```JavaScript
 <div id="parentDiv">
  <div id="d1">第一个div</div>

@@ -1,5 +1,7 @@
 # Boolean对象
 
+[TOC]
+
 用于生成布尔值的包装对象实例
 
 ```javascript

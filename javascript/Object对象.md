@@ -1,5 +1,7 @@
 # Obejct对象
 
+[TOC]
+
 ## `Object`的原生方法
 
 分为两类：

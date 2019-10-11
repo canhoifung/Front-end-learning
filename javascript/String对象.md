@@ -1,5 +1,7 @@
 # String对象
 
+[TOC]
+
 作为包装对象，用于生成字符串对象
 
 ```javascript
