@@ -56,6 +56,15 @@
 
 [严格模式](javascript/严格模式.md)
 
+## 异步操作
+
+[异步操作概述](javascript/异步操作概述.md)
+
+[定时器](javascript/定时器.md)
+
+[Promise对象](javascript/Promise对象.md)
+
+
 ## 未分类
 
 [不知如何分类的函数、方法](javascript/不知如何分类的函数、方法.md)
