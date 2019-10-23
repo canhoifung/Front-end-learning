@@ -195,11 +195,146 @@ d2.previousSibling === d1 // true
 
 ### `Node.prototype.firstChild`、`Node.prototype.lastChild`
 
+`firstChild`返回当前节点的第一个子节点，若无则返回`null`
 
+`lastChild`返回当前节点的最后一个子节点，若无则返回`null`
 
+> 会返回元素节点、文本节点或注释节点
 
+```javascript
+// HTML 代码如下
+// <p id="p1"><span>First span</span></p>
+var p1 = document.getElementById('p1');
+p1.firstChild.nodeName // "SPAN"
+```
 
+```javascript
+// HTML 代码如下
+// <p id="p1">
+//   <span>First span</span>
+//  </p>
+var p1 = document.getElementById('p1');
+p1.firstChild.nodeName // "#text"
+```
 
+上面由于`p`和`span`之间有空白字符，所以返回了文本节点
+
+### `Node.prototype.childNodes`
+
+返回一个类似数组的对象（`NodeList`集合），包括当前节点的所有子节点
+
+```javascript
+var div = document.getElementById('div1');
+var children = div.childNodes;
+
+for (var i = 0; i < children.length; i++) {
+  // ...
+}
+```
+
+==*==文档节点只有两个子节点：文档类型节点和HTML根元素节点
+
+```javascript
+var children = document.childNodes;
+for (var i = 0; i < children.length; i++) {
+  console.log(children[i].nodeType);
+}
+// 10
+// 1
+```
+
+同样会返回文本节点和注释节点
+
+==*==`NodeList`对象是一个动态集合，若子节点发生变化，会立刻反映在返回结果中
+
+### `Node.prototype.isConnected`
+
+返回一个布尔值，表示当前节点是否在文档中
+
+```javascript
+var test = document.createElement('p');
+test.isConnected // false
+
+document.body.appendChild(test);
+test.isConnected // true
+```
+
+## 方法
+
+### `Node.prototype.appendChild()`
+
+接收一个节点对象作为参数，将其作为最后一个子节点，插入当前节点
+
+返回值为插入文档的子节点
+
+```javascript
+var p = document.createElement('p');
+document.body.appendChild(p);
+```
+
+若参数节点是已经存在的节点，会将其从原来的位置移动到新位置
+
+> 如果`appendChild()`方法的参数是`DocumentFragment`节点，那么插入的是`DocumentFragment`的所有子节点，而不是`DocumentFragment`节点本身。返回值是一个空的`DocumentFragment`节点。
+
+### `Node.prototype.hasChildNodes()`
+
+返回一个布尔值，表示当前节点是否有子节点（包含所有类型的节点）
+
+```javascript
+var foo = document.getElementById('foo');
+
+if (foo.hasChildNodes()) {
+  foo.removeChild(foo.childNodes[0]);
+}
+```
+
+判断子节点的方法：
+
++ `node.hasChildNodes()`
++ `node.firstChild !== null`
++ `node.childNodes && node.childNodes.length > 0`
+
+### `Node.prototype.cloneNode()`
+
+用于克隆一个几点，接收一个布尔值作为参数，表示是否同时克隆子节点
+
+返回一个克隆出来的新节点
+
+```javascript
+var cloneUL = document.querySelector('ul').cloneNode(true);
+```
+
+注意点：
+
+1. 克隆一个节点，会拷贝该节点的所有属性，但是会丧失`addEventListener`方法和`on-`属性（即`node.onclick = fn`），添加在这个节点上的事件回调函数。
+2. 该方法返回的节点不在文档之中，即没有任何父节点，必须使用诸如`Node.appendChild`这样的方法添加到文档之中。
+3. 克隆一个节点之后，DOM 有可能出现两个有相同`id`属性（即`id="xxx"`）的网页元素，这时应该修改其中一个元素的`id`属性。如果原节点有`name`属性，可能也需要修改。
+
+### `Node.prototype.insertBefore()`
+
+将某个节点插入父节点内部的指定位置
+
+```javascript
+var insertedNode = parentNode.insertBefore(newNode, referenceNode);
+```
+
++ `newNode`：要插入的节点
++ `referenceNode`：父节点`parentNode`内部的一个子节点，若为`null`，则将新节点插入到当前节点内部的最后位置，变为最后一个子节点
+
+返回插入的新节点`newNode`
+
+```javascript
+var p = document.createElement('p');
+document.body.insertBefore(p, document.body.firstChild);
+```
+
+==*==不存在`insertAfter`方法，可以用这个实现：
+
+```javascript
+parent.insertBefore(s1, s2.nextSibling);
+```
+
+### `Node.prototype.removeChild()`
 
 
 
