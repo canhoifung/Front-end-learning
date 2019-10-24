@@ -336,11 +336,128 @@ parent.insertBefore(s1, s2.nextSibling);
 
 ### `Node.prototype.removeChild()`
 
+接收一个子节点作为参数，用于从当前节点移除该子节点
 
+返回移除的子节点
 
+```javascript
+var divA = document.getElementById('A');
+divA.parentNode.removeChild(divA);
+```
 
+==*==需要在父节点上调用
 
+### `Node.prototype.replaceChild()`
 
+用于将一个新的节点，替换当前节点的某一个子节点
+
+```javascript
+var replacedNode = parentNode.replaceChild(newChild, oldChild);
+```
+
+返回替换走的那个节点`oldChild`
+
+### `Node.prototype.contains()`
+
+返回一个布尔值，表示参数是否满足以下三个条件之一：
+
++ 参数节点为当前节点。
++ 参数节点为当前节点的子节点。
++ 参数节点为当前节点的后代节点。
+
+```javascript
+document.body.contains(node)
+```
+
+### `Node.prototype.compareDocumentPosition()`
+
+用法与`contains`方法一直，返回一个六位比特位的二进制值，表示参数节点与当前节点的关系
+
+| 二进制值 | 十进制值 | 含义                                               |
+| -------- | -------- | -------------------------------------------------- |
+| 000000   | 0        | 两个节点相同                                       |
+| 0000001  | 1        | 两个节点不在同一个文档（即有一个节点不在当前文档） |
+| 000010   | 2        | 参数节点在当前节点的前面                           |
+| 000100   | 4        | 参数节点在当前节点的后面                           |
+| 001000   | 8        | 参数节点包含当前节点                               |
+| 010000   | 16       | 当前节点包含参数节点                               |
+| 100000   | 32       | 浏览器内部使用                                     |
+
+```javascript
+// HTML 代码如下
+// <div id="mydiv">
+//   <form><input id="test" /></form>
+// </div>
+
+var div = document.getElementById('mydiv');
+var input = document.getElementById('test');
+
+div.compareDocumentPosition(input) // 20
+input.compareDocumentPosition(div) // 10
+```
+
+上面代码中，
+
+1. 节点`div`包含节点`input`（二进制`010000`）
+2. 节点`input`在节点`div`的后面（二进制`000100`）
+3. 所以第一个`compareDocumentPosition`方法返回`20`（二进制`010100`，即`010000 + 000100`）
+4. 第二个`compareDocumentPosition`方法返回`10`（二进制`001010`）。
+
+### `Node.prototype.isEqualNode()`、`Node.prototype.isSameNode()`
+
+`isEqualNode`方法返回一个布尔值，判断两个节点是否相等
+
+相等指：
+
++ 类型相同
++ 属性相同
++ 子节点相同
+
+`isSameNode`方法返回一个布尔值，判断两个节点是否为同一个节点
+
+```javascript
+var p1 = document.createElement('p');
+var p2 = document.createElement('p');
+
+p1.isEqualNode(p2) // true
+p1.isSameNode(p2) // false
+p1.isSameNode(p1) // true
+```
+
+### `Node.prototype.normalize()`
+
+用于清理当前节点内部的所有文本节点
+
+会去除空的文本节点，并将毗邻的文本节点合并成一个
+
+```javascript
+var wrapper = document.createElement('div');
+
+wrapper.appendChild(document.createTextNode('Part 1 '));
+wrapper.appendChild(document.createTextNode('Part 2 '));
+
+wrapper.childNodes.length // 2
+wrapper.normalize();
+wrapper.childNodes.length // 1
+```
+
+### `Node.prototype.getRootNode()`
+
+返回当前节点所在文档的根节点`document`，与`ownerDocument`属性作用相同
+
+```javascript
+document.body.firstChild.getRootNode() === document
+// true
+document.body.firstChild.getRootNode() === document.body.firstChild.ownerDocument
+// true
+```
+
+可用于`document`节点自身：
+
+```javascript
+document.getRootNode() // document
+document.ownerDocument // null
+```
 
 
 
