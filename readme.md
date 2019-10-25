@@ -70,7 +70,7 @@
 
 [Node接口](javascript/Node接口.md)
 
-[NodeLIst接口，HTMLCollection接口](javascript/NodeLIst接口，HTMLCollection接口.md)
+[NodeList接口，HTMLCollection接口](javascript/NodeList接口，HTMLCollection接口.md)
 
 [ParentNode接口，ChildNode接口](javascript/ParentNode接口，ChildNode接口.md)
 
