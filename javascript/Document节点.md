@@ -746,7 +746,54 @@ if (url) {
 
 bold、insertLineBreak、selectAll、createLink、insertOrderedList、subscript、delete、insertUnorderedList、superscript、formatBlock、insertParagraph、undo、forwardDelete、insertText、unlink、insertImage、italic、unselect、insertHTML、redo
 
+#### `document.queryCommandSupported()`
 
+返回一个布尔值，表示浏览器是否支持`document.execCommand()`的某个命令
+
+```javascript
+if (document.queryCommandSupported('SelectAll')) {
+  console.log('浏览器支持选中可编辑区域的所有内容');
+}
+```
+
+#### `document.queryCommandEnabled()`
+
+返回一个布尔值，表示当前是否可用`document.execCommand()`的某个命令
+
+```javascript
+// HTML 代码为
+// <input type="button" value="Copy" onclick="doCopy()">
+
+function doCopy(){
+  // 浏览器是否支持 copy 命令（选中内容复制到剪贴板）
+  if (document.queryCommandSupported('copy')) {
+    copyText('你好');
+  }else{
+    console.log('浏览器不支持');
+  }
+}
+
+function copyText(text) {
+  var input = document.createElement('textarea');
+  document.body.appendChild(input);
+  input.value = text;
+  input.focus();
+  input.select();
+
+  // 当前是否有选中文字
+  if (document.queryCommandEnabled('copy')) {
+    var success = document.execCommand('copy');
+    input.remove();
+    console.log('Copy Ok');
+  } else {
+    console.log('queryCommandEnabled is false');
+  }
+}
+```
+
+### `document.getSelection()`
+
+指向`window.getSelection()`
 
 
 
