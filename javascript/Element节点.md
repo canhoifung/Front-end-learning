@@ -346,6 +346,40 @@ document.documentElement.scrollTop
 
 若元素为`display:none`或`position:fixed`，则返回`null`
 
+> 若所有上层节点的`position:static`，则指向`<body>`元素
+
+### `Element.offsetHeight`、`Element.offsetWidth`
+
+返回一个整数，表示元素的CSS垂直高度/水平宽度
+
+包括了元素本身的高度、`padding`、`border`，以及滚动条的宽高
+
+只读
+
+与`Element.clientHetight`、`Element.clientWidth`多了`border`的宽高
+
+若元素设为`display:none`，则返回0
+
+### `Element.offsetLeft`、`Element.offsetTop`
+
+返回当前元素左上角相对于`Element.offsetParent`节点的水平/垂直位移
+
+通常指相对于父节点的位移
+
+```javascript
+//计算元素左上角相对于
+function getElementPosition(e) {
+  var x = 0;
+  var y = 0;
+  while (e !== null)  {
+    x += e.offsetLeft;
+    y += e.offsetTop;
+    e = e.offsetParent;
+  }
+  return {x: x, y: y};
+}
+```
+
 
 
 
