@@ -367,7 +367,7 @@ document.documentElement.scrollTop
 通常指相对于父节点的位移
 
 ```javascript
-//计算元素左上角相对于
+//计算元素左上角相对于整张网页的坐标
 function getElementPosition(e) {
   var x = 0;
   var y = 0;
@@ -380,15 +380,266 @@ function getElementPosition(e) {
 }
 ```
 
+### `Element.style`
+
+用于读写该元素的行内样式信息
+
+### `Element.children`、`Element.childElementCount`
+
+`Element.children`返回一个类似数组的对象（`HTMLCollection`实例），包含当前元素节点的所有子元素
+
+若无则返回对象包含0个成员
+
+==*==与`Node.childNodes`区别为只包括了元素类型的子节点
 
 
 
+`Element.childElementCount`则返回当前元素节点包含的子元素节点的个数，相当于`Element.children.length`
+
+### `Element.firstElementChild`、`Element.lastElementChild`
+
+字面意思
+
+### `Element.nexeElementSibling`、`Element.previousElementSibling`
+
+返回当前元素节点的后一个/前一个  同级元素节点，若无则返回`null`
+
+## 实例方法
+
+### 属性相关方法
+
+用于操作属性的方法：
+
+- `getAttribute()`：读取某个属性的值
+- `getAttributeNames()`：返回当前元素的所有属性名
+- `setAttribute()`：写入属性值
+- `hasAttribute()`：某个属性是否存在
+- `hasAttributes()`：当前元素是否有属性
+- `removeAttribute()`：删除属性
+
+### `Element.quertSelector()`
+
+接收CSS选择器作为参数，返回父元素第一个匹配的子元素
+
+若无则返回`null`
+
+==*==无法选中伪类元素
+
+可接收多个选择器，用逗号分割
+
+可接收任何复杂的CSS选择器
+
+> 执行该方法时，会先在全局范围内搜索给定的CSS选择器，然后过滤出当前元素的子元素
+
+```html
+<div>
+<blockquote id="outer">
+  <p>Hello</p>
+  <div id="inner">
+    <p>World</p>
+  </div>
+</blockquote>
+</div>
+```
+
+但是返回的是第一个`p`元素
+
+```javascript
+var outer = document.getElementById('outer');
+outer.querySelector('div p')
+// <p>Hello</p>
+```
+
+> 此处是因为全局搜索  过滤全局范围内的div下的p元素  而第一个p元素刚好符合条件且在outer下 
+
+### `Element.querySelectorAll()`
+
+返回一个`NodeList`实例，包含所有匹配的子元素
+
+若有伪元素的选择器，则总是返回一个空的`NodeList`实例
+
+其余操作与`Element.querySelector()`一样
+
+### `Element.getElementsByClassName()`
+
+返回一个`HTMLCollection`实例，成员为当前元素节点的所有具有指定class的子元素节点
+
+活集合，对象变化会反应到实例中
+
+```javascript
+// HTML 代码如下
+// <div id="example">
+//   <p class="foo"></p>
+//   <p class="foo"></p>
+// </div>
+var element = document.getElementById('example');
+var matches = element.getElementsByClassName('foo');
+
+for (var i = 0; i< matches.length; i++) {
+  matches[i].classList.remove('foo');
+  matches.item(i).classList.add('bar');
+}
+// 执行后，HTML 代码如下
+// <div id="example">
+//   <p></p>
+//   <p class="foo bar"></p>
+// </div>
+```
+
+### `Element.getElementsByTagName()`
+
+返回一个`HTMLCollection`实例，成员为当前节点的所有匹配指定标签名的子元素节点
+
+==**==参数大小写不敏感
+
+### `Element.closest()`
+
+接收一个CSS选择器作为参数，返回
+
++ 匹配该选择器的
++ 最接近当前节点的
++ 祖先节点（包括当前节点）
+
+若无则返回`null`
+
+```javascript
+// HTML 代码如下
+// <article>
+//   <div id="div-01">Here is div-01
+//     <div id="div-02">Here is div-02
+//       <div id="div-03">Here is div-03</div>
+//     </div>
+//   </div>
+// </article>
+
+var div03 = document.getElementById('div-03');
+
+// div-03 最近的祖先节点
+div03.closest("#div-02") // div-02
+div03.closest("div div") // div-03
+div03.closest("article > div") //div-01
+div03.closest(":not(div)") // article
+```
+
+### `Element.matches()`
+
+返回一个布尔值，表示当前元素是否匹配给定的CSS选择器
+
+```javascript
+if (el.matches('.someClass')){
+    console.log('Mathch!');
+}
+```
+
+### 事件相关方法
+
+方法继承`EventTarget`接口
+
+#### `Element.addEventListener()`
+
+添加事件的回调函数
+
+#### `Element.removeEventListener()`
+
+移除事件监听函数
+
+#### `Element.dispatchEvent()`
+
+触发事件
 
 
 
+```javascript
+element.addEventListener('click', listener, false);
+element.removeEventListener('click', listener, false);
 
+var event = new Event('click');
+element.dispatchEvent(event);
+```
 
+### `Element.scrollIntoView()`
 
+滚动当前元素，进入浏览器的可见区域
+
+类似`window.location.hash`的效果
+
+```javascript
+el.scrollIntoView(); // 等同于el.scrollIntoView(true)
+el.scrollIntoView(false);
+```
+
+接收布尔值作为参数：
+
++ `true`，表示元素的顶部与当前区域的可见部分的顶部对齐
++ `false`，表示元素的底部与当前区域的可见部分的尾部对齐
++ 不设置则默认为`true`
+
+> 前提为当前区域可滚动
+
+### `Element.getBoundingClientRect()`
+
+返回一个对象，提供当前元素节点的大小、位置等信息，基本上为CSS盒状模型的所有信息
+
+`getBoundingClientRect`方法返回的`rect`对象，具有以下属性（全部为只读）。
+
+- `x`：元素左上角相对于视口的横坐标
+- `y`：元素左上角相对于视口的纵坐标
+- `height`：元素高度（包含了padding+border）
+- `width`：元素宽度（包含了padding+border）
+- `left`：元素左上角相对于视口的横坐标，与`x`属性相等
+- `right`：元素右边界相对于视口的横坐标（等于`x + width`）
+- `top`：元素顶部相对于视口的纵坐标，与`y`属性相等
+- `bottom`：元素底部相对于视口的纵坐标（等于`y + height`）
+
+> 表示位置的四个属性值会随位置变化，若要绝对位置
+>
+> `left`加上`window.scrollX`
+>
+> `top`加上`window.scrollY`
+
+以上属性都为继承自原型的属性
+
+因此`Object.keys`会返回空数组
+
+### `Element.getClientRects()`
+
+返回一个类似数组的对象，成员为当前元素在页面上形成的==所有==矩形
+
+每个矩形都有`bottom`、`height`、`left`、`right`、`top`和`width`六个属性，表示它们相对于视口的四个坐标，以及本身的高度和宽度
+
+对于块状元素，如`div`、`p`，返回的对象中只有该元素一个成员
+
+对于行内元素，如`span`、`a`，返回的对象的成员数取决于该元素在页面上占据了多少行
+
+```html
+<span id="inline">Hello World Hello World Hello World</span>
+```
+
+该行内元素，若占据了三行，则返回三个成员，若占据一行，则返回一个成员
+
+```javascript
+var el = document.getElementById('inline');
+el.getClientRects().length // 3
+el.getClientRects()[0].left // 8
+el.getClientRects()[0].right // 113.908203125
+el.getClientRects()[0].bottom // 31.200000762939453
+el.getClientRects()[0].height // 23.200000762939453
+el.getClientRects()[0].width // 105.908203125
+```
+
+> 判断行内元素是否换行
+
+==*==若行内元素包括了换行符，会计算换行符
+
+```html
+<span id="inline">
+  Hello World
+  Hello World
+  Hello World
+</span>
+```
+
+上面会返回三个成员
 
 
 
