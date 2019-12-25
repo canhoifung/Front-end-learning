@@ -641,7 +641,95 @@ el.getClientRects()[0].width // 105.908203125
 
 上面会返回三个成员
 
+### `Element.insertAdjacentElement()`
 
+在相对于当前元素的指定位置，插入一个新的节点
+
+返回被插入的节点
+
+若插入失败则返回`null`
+
+```javascript
+element.insertAdjacentElement(position,element);
+```
+
+第一个参数为字符串，表示插入的位置
+
+如：
+
+- `beforebegin`：当前元素之前
+- `afterbegin`：当前元素内部的第一个子节点前面
+- `beforeend`：当前元素内部的最后一个子节点后面
+- `afterend`：当前元素之后
+
+> `beforebegin`和`afterend`这两个需要当前节点有父节点，即不能是由脚本创建，会插入失败
+
+第二个参数表示将要插入的节点
+
+```javascript
+var p1 = document.createElement('p')
+var p2 = document.createElement('p')
+p1.insertAdjacentElement('afterend', p2) // null
+```
+
+若插入的节点为文档现有的节点，会从原有位置删除，放置到新的位置
+
+### `Element.insertAdjacentHTML()`，`Element.insertAdjacentText()`
+
+`Element.insertAdjacentHTML()`用于将一个HTML字符串解析为一个DOM结构，并插入相对于当前节点的指定位置
+
+```javascript
+element.insertAdjacentHTML(positon,text)
+```
+
+参数如上，第一个参数只能设置下面四个值之一
+
+- `beforebegin`：当前元素之前
+- `afterbegin`：当前元素内部的第一个子节点前面
+- `beforeend`：当前元素内部的最后一个子节点后面
+- `afterend`：当前元素之后
+
+```javascript
+// HTML 代码：<div id="one">one</div>
+var d1 = document.getElementById('one');
+d1.insertAdjacentHTML('afterend', '<div id="two">two</div>');
+// 执行后的 HTML 代码：
+// <div id="one">one</div><div id="two">two</div>
+```
+
+==*==论速度比`innerHTML`快
+
+但不会转义字符串，因此不能用于插入用户输入的内容，否则会有安全风险
+
+
+
+`Element.insertAdjacentText()`用于相对于当前节点的指定位置，插入一个文本节点
+
+### `Element.remove()`
+
+继承自ChildNode接口，用于将当前元素节点从其父节点移除
+
+### `Element.focus()`，`Element.blur()`
+
+`Element.focus()`用于将当前页面的焦点，转义到制定元素上
+
+可以接收一个对象作为参数
+
+```javascript
+function getFocus() {
+  document.getElementById('btn').focus({preventScroll:false});
+}
+```
+
+其中`preventScroll`为一个布尔值，判断是否将当前元素停留在原始位置，而不是滚动到可见区域，false则为滚动
+
+
+
+`Element.blur()`用于将焦点从当前元素移除
+
+### `Element.click()`
+
+用于在当前元素上模拟一次鼠标点击，相当于触发了`click`事件
 
 
 
