@@ -352,7 +352,140 @@ var color = window.getComputedStyle(test, ':before')
 
 ## StyleSheet接口
 
-代表网页的一张样式表
+代表网页的一张样式表，包括`<link>`元素加载的样式和`<style>`元素内嵌的样式表
+
+`document.styleSheets`属性可以返回当前页面的所有`StyleSheet`类似数组的实例（即样式表）
+
+```javascript
+var sheets = document.styleSheets;
+var sheet = document.styleSheets[0];
+sheet instanceof StyleSheet // true
+```
+
+另一种获取`StyleSheet`实例的方法：
+
+```javascript
+// HTML 代码为 <style id="myStyle"></style>
+var myStyleSheet = document.getElementById('myStyle').sheet;
+myStyleSheet instanceof StyleSheet // true
+```
+
+
+
+`StyleSheet`接口包括了网页样式表和XML文档的样式表
+
+其中网页样式表即`CSSStyleSheet`
+
+## 实例属性
+
+`StyleSheet`实例具有以下属性：
+
+### StyleSheet.disabled
+
+返回一个布尔值，表示该样式表是否处于禁用状态
+
+可读写
+
+> 只能在JavaScript脚本中设置，不能在HTML语句中设置
+
+### StyleSheet.href
+
+返回样式表的网址
+
+对于内嵌样式表，返回`null`
+
+只读
+
+```javascript
+document.styleSheets[0].href
+```
+
+### StyleSheet.media
+
+返回一个类似数组的对象（`MediaList`实例），成员是表示适用媒介的字符串
+
+表示当前样式表用于：
+
++ 屏幕（screen）
++ 打印（print）
++ 手持设备（handheld）
++ 都（all）
+
+只读，默认为`screen`
+
+`MediaList`实例的`appendMedium`方法，用于增加媒介；`deleteMedium`方法用于删除媒介。
+
+```JavaScript
+document.styleSheets[0].media.appendMedium('handheld');
+document.styleSheets[0].media.deleteMedium('print');
+```
+
+### StyleSheet.title
+
+返回样式表的`title`属性
+
+### StyleSheet.type
+
+返回样式表的`type`属性，通常是`text/css`
+
+```javascript
+document.styleSheets[0].type  // "text/css"
+```
+
+### StyleSheet.parentStyleSheet
+
+返回包含了当前样式表的那张样式表
+
+CSS的`@import`命令允许在样式表中加载其他样式表
+
+若为顶层样式表，则返回`null`
+
+```javascript
+if (stylesheet.parentStyleSheet) {
+  sheet = stylesheet.parentStyleSheet;
+} else {
+  sheet = stylesheet;
+}
+```
+
+### StyleSheet.ownerNode
+
+返回`StyleSheet`对象所在的DOM节点，通常是`<link>`或`<style>`
+
+若为由其他样式表引用的样式表，则返回`null`
+
+```javascript
+// HTML代码为
+// <link rel="StyleSheet" href="example.css" type="text/css" />
+document.styleSheets[0].ownerNode // [object HTMLLinkElement]
+```
+
+### CSSStyleSheet.cssRules
+
+指向一个类似数组的对象（即`CSSRuleList`实例），成员为当前样式表的一条CSS规则
+
+使用该规则的`cssText`属性可以获取CSS规则对应的字符串
+
+```javascript
+var sheet = document.querySelector('#styleElement').sheet;
+
+sheet.cssRules[0].cssText
+// "body { background-color: red; margin: 20px; }"
+
+sheet.cssRules[1].cssText
+// "p { line-height: 1.4em; color: blue; }"
+```
+
+每条 CSS 规则还有一个`style`属性，指向一个对象，用来读写具体的 CSS 命令。
+
+```javascript
+cssStyleSheet.cssRules[0].style.color = 'red';
+cssStyleSheet.cssRules[1].style.color = 'purple';
+```
+
+### CSSStyleSheet.ownerRule
+
+有些样式表是通过`@import`规则输入的，它的`ownerRule`属性会返回一个`CSSRule`实例，代表那行`@import`规则。如果当前样式表不是通过`@import`引入的，`ownerRule`属性返回`null`。
 
 
 
