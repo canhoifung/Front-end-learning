@@ -376,11 +376,11 @@ myStyleSheet instanceof StyleSheet // true
 
 其中网页样式表即`CSSStyleSheet`
 
-## 实例属性
+### 实例属性
 
 `StyleSheet`实例具有以下属性：
 
-### StyleSheet.disabled
+#### StyleSheet.disabled
 
 返回一个布尔值，表示该样式表是否处于禁用状态
 
@@ -388,7 +388,7 @@ myStyleSheet instanceof StyleSheet // true
 
 > 只能在JavaScript脚本中设置，不能在HTML语句中设置
 
-### StyleSheet.href
+#### StyleSheet.href
 
 返回样式表的网址
 
@@ -400,7 +400,7 @@ myStyleSheet instanceof StyleSheet // true
 document.styleSheets[0].href
 ```
 
-### StyleSheet.media
+#### StyleSheet.media
 
 返回一个类似数组的对象（`MediaList`实例），成员是表示适用媒介的字符串
 
@@ -420,11 +420,11 @@ document.styleSheets[0].media.appendMedium('handheld');
 document.styleSheets[0].media.deleteMedium('print');
 ```
 
-### StyleSheet.title
+#### StyleSheet.title
 
 返回样式表的`title`属性
 
-### StyleSheet.type
+#### StyleSheet.type
 
 返回样式表的`type`属性，通常是`text/css`
 
@@ -432,7 +432,7 @@ document.styleSheets[0].media.deleteMedium('print');
 document.styleSheets[0].type  // "text/css"
 ```
 
-### StyleSheet.parentStyleSheet
+#### StyleSheet.parentStyleSheet
 
 返回包含了当前样式表的那张样式表
 
@@ -448,7 +448,7 @@ if (stylesheet.parentStyleSheet) {
 }
 ```
 
-### StyleSheet.ownerNode
+#### StyleSheet.ownerNode
 
 返回`StyleSheet`对象所在的DOM节点，通常是`<link>`或`<style>`
 
@@ -460,7 +460,7 @@ if (stylesheet.parentStyleSheet) {
 document.styleSheets[0].ownerNode // [object HTMLLinkElement]
 ```
 
-### CSSStyleSheet.cssRules
+#### CSSStyleSheet.cssRules
 
 指向一个类似数组的对象（即`CSSRuleList`实例），成员为当前样式表的一条CSS规则
 
@@ -483,29 +483,356 @@ cssStyleSheet.cssRules[0].style.color = 'red';
 cssStyleSheet.cssRules[1].style.color = 'purple';
 ```
 
-### CSSStyleSheet.ownerRule
+#### CSSStyleSheet.ownerRule
 
 有些样式表是通过`@import`规则输入的，它的`ownerRule`属性会返回一个`CSSRule`实例，代表那行`@import`规则。如果当前样式表不是通过`@import`引入的，`ownerRule`属性返回`null`。
 
+### 实例方法
 
+#### CSSStyleSheet.insertRule()
 
+用于在当前样式表的插入一个新的CSS规则
 
+```javascript
+var sheet = document.querySelector('#styleElement').sheet;
+sheet.insertRule('#block { color: white }', 0);
+sheet.insertRule('p { color: red }', 1);
+```
 
+接受两个参数：
 
+1. 表示CSS规则的字符串，只能有一条规则，否则报错
+2. 该规则在样式表的插入位置（0开始），可选，默认为0（即头部）
 
+> 浏览器对脚本在样式表里面插入规则有很多[限制](https://drafts.csswg.org/cssom/#insert-a-css-rule)。所以，这个方法最好放在`try...catch`里使用。
 
+#### CSSStyleSheet.deleteRule()
 
+用于在样式表里面移除一条规则，参数为该条规则在`cssRule`对象中的位置
 
+无返回值
 
+```javascript
+document.styleSheets[0].deleteRule(1);
+```
 
+## 实例：添加样式表
 
+添加样式表两种方法：
 
+1. 添加一张内置样式表，即添加一个`<style>`节点
 
+```javascript
+// 写法一
+var style = document.createElement('style');
+style.setAttribute('media', 'screen');
+style.innerHTML = 'body{color:red}';
+document.head.appendChild(style);
 
+// 写法二
+var style = (function () {
+  var style = document.createElement('style');
+  document.head.appendChild(style);
+  return style;
+})();
+style.sheet.insertRule('.foo{color:red;}', 0);
+```
 
+2. 添加外部样式表，即添加一个`<link>`节点，然后将`href`属性指向外部样式表的URL
 
+```javascript
+var linkElm = document.createElement('link');
+linkElm.setAttribute('rel', 'stylesheet');
+linkElm.setAttribute('type', 'text/css');
+linkElm.setAttribute('href', 'reset-min.css');
 
+document.head.appendChild(linkElm);
+```
 
+## CSSRuleList 接口
+
+是一个类似数组的对象，表示一组CSS规则，成员都是CSSRule实例
+
+通过`StyleSheet.cssRules`属性获取CSSRuleList实例
+
+```javascript
+// HTML 代码如下
+// <style id="myStyle">
+//   h1 { color: red; }
+//   p { color: blue; }
+// </style>
+var myStyleSheet = document.getElementById('myStyle').sheet;
+var crl = myStyleSheet.cssRules;
+crl instanceof CSSRuleList // true
+```
+
+实例中每一条实例都可以通过`rules.item(index)`或者`rules[index]`获得
+
+条数可以通过`rules.length`获得
+
+## CSSRule接口
+
+JavaScript通过CSSRuleList接口获取CSSRule实例
+
+```javascript
+// HTML 代码如下
+// <style id="myStyle">
+//   .myClass {
+//     color: red;
+//     background-color: yellow;
+//   }
+// </style>
+var myStyleSheet = document.getElementById('myStyle').sheet;
+var ruleList = myStyleSheet.cssRules;
+var rule = ruleList[0];
+rule instanceof CSSRule // true
+```
+
+### CSSRule实例属性
+
+#### CSSRule.cssText
+
+返回当前规则的文本
+
+```javascript
+rule.cssText;
+// ".myClass { color: red; background-color: yellow; }"
+```
+
+如果规则为加载其他样式表的（`@import`），则返回`@import 'url'`
+
+#### CSSRule.parentStyleSheet
+
+返回当前规则所在的样式表对象
+
+```javascript
+rule.parentStyleSheet === myStyleSheet //true
+```
+
+#### CSSRule.parentRule
+
+返回包含当前规则的父规则，若不存在父规则，则返回`null`
+
+常见情况：当前规则包含在`@media`规则代码块之中
+
+```javascript
+// HTML 代码如下
+// <style id="myStyle">
+//   @supports (display: flex) {
+//     @media screen and (min-width: 900px) {
+//       article {
+//         display: flex;
+//       }
+//     }
+//  }
+// </style>
+var myStyleSheet = document.getElementById('myStyle').sheet;
+var ruleList = myStyleSheet.cssRules;
+
+var rule0 = ruleList[0];
+rule0.cssText
+// "@supports (display: flex) {
+//    @media screen and (min-width: 900px) {
+//      article { display: flex; }
+//    }
+// }"
+
+// 由于这条规则内嵌其他规则，
+// 所以它有 cssRules 属性，且该属性是 CSSRuleList 实例
+rule0.cssRules instanceof CSSRuleList // true
+
+var rule1 = rule0.cssRules[0];
+rule1.cssText
+// "@media screen and (min-width: 900px) {
+//   article { display: flex; }
+// }"
+
+var rule2 = rule1.cssRules[0];
+rule2.cssText
+// "article { display: flex; }"
+
+rule1.parentRule === rule0 // true
+rule2.parentRule === rule1 // true
+```
+
+#### CSSRule.type
+
+返回一个整数值，表示当前规则的类型
+
+常见类型：
+
+1. 普通样式规则（CSSStyleRule实例）
+2. `@import`规则
+3. `@media`规则（CSSMediaRule实例）
+4. `@font-face`规则
+
+### CSSStyleRule接口
+
+若一条CSS规则为普通的样式规则，则除了CSSRule接口，还部署了CSSStyleRule接口
+
+有一下两个属性：
+
+#### （1）CSSStyleR.selectorText
+
+返回当前规则的选择器
+
+```javascript
+var stylesheet = document.styleSheets[0];
+stylesheet.cssRules[0].selectorText // ".myClass"
+```
+
+可写
+
+#### （2）CSSStyle.style
+
+返回一个对象（CSSStyleDeclaration实例），代表当前规则的样式声明
+
+即选择器后面的大括号部分
+
+```javascript
+// HTML 代码为
+// <style id="myStyle">
+//   p { color: red; }
+// </style>
+var styleSheet = document.getElementById('myStyle').sheet;
+styleSheet.cssRules[0].style instanceof CSSStyleDeclaration
+// true
+```
+
+CSSStyleDeclaration 实例的`cssText`属性，可以返回所有样式声明，格式为字符串。
+
+```javascript
+styleSheet.cssRules[0].style.cssText
+// "color: red;"
+styleSheet.cssRules[0].selectorText
+// "p"
+```
+
+### CSSMediaRule 接口
+
+如果一条 CSS 规则是`@media`代码块，那么它除了 CSSRule 接口，还部署了 CSSMediaRule 接口。
+
+该接口主要提供`media`属性和`conditionText`属性。前者返回代表`@media`规则的一个对象（MediaList 实例），后者返回`@media`规则的生效条件。
+
+```javascript
+// HTML 代码如下
+// <style id="myStyle">
+//   @media screen and (min-width: 900px) {
+//     article { display: flex; }
+//   }
+// </style>
+var styleSheet = document.getElementById('myStyle').sheet;
+styleSheet.cssRules[0] instanceof CSSMediaRule
+// true
+
+styleSheet.cssRules[0].media
+//  {
+//    0: "screen and (min-width: 900px)",
+//    appendMedium: function,
+//    deleteMedium: function,
+//    item: function,
+//    length: 1,
+//    mediaText: "screen and (min-width: 900px)"
+// }
+
+styleSheet.cssRules[0].conditionText
+// "screen and (min-width: 900px)"
+```
+
+## window.matchMedia()
+
+### 用法
+
+用于将CSS的`MediaQuery`条件语句，转换成一个MediaQueryList实例
+
+```javascript
+var mdl = window.matchMedia('(min-width: 400px)');
+mdl instanceof MediaQueryList // true
+```
+
+==*==若参数不是有效的`MediaQuery`条件语句，也不会报错，依然返回一个MediaQueryList实例
+
+### 接口实例属性
+
+#### MediaQueryList.media
+
+返回一个字符串，表示对应的`MediaQuery`条件语句
+
+```javascript
+var mql = window.matchMedia('(min-width: 400px)');
+mql.media // "(min-width: 400px)"
+```
+
+#### MediaQueryList.matches
+
+返回一个布尔值，表示当前页面是否符合指定的MediaQuery条件语句
+
+```javascript
+if (window.matchMedia('(min-width: 400px)').matches) {
+  /* 当前视口不小于 400 像素 */
+} else {
+  /* 当前视口小于 400 像素 */
+}
+```
+
+例子：
+
+```javascript
+var result = window.matchMedia("(max-width: 700px)");
+
+if (result.matches){
+  var linkElm = document.createElement('link');
+  linkElm.setAttribute('rel', 'stylesheet');
+  linkElm.setAttribute('type', 'text/css');
+  linkElm.setAttribute('href', 'small.css');
+
+  document.head.appendChild(linkElm);
+}
+```
+
+#### MediaQueryList.onchange
+
+若MediaQuery条件语句的适配环境发生变化，会触发`change`事件
+
+该属性用于指定`change`事件的监听函数
+
+函数参数为`change`事件对象
+
+```javascript
+var mql = window.matchMedia('(max-width: 600px)');
+
+mql.onchange = function(e) {
+  if (e.matches) {
+    /* 视口不超过 600 像素 */
+  } else {
+    /* 视口超过 600 像素 */
+  }
+}
+```
+
+### MediaQueryList接口的实例方法
+
+MediaQueryList 实例有两个方法`MediaQueryList.addListener()`和`MediaQueryList.removeListener()`，用来为`change`事件添加或撤销监听函数。
+
+```javascript
+var mql = window.matchMedia('(max-width: 600px)');
+
+// 指定监听函数
+mql.addListener(mqCallback);
+
+// 撤销监听函数
+mql.removeListener(mqCallback);
+
+function mqCallback(e) {
+  if (e.matches) {
+    /* 视口不超过 600 像素 */
+  } else {
+    /* 视口超过 600 像素 */
+  }
+}
+```
+
+注意，`MediaQueryList.removeListener()`方法不能撤销`MediaQueryList.onchange`属性指定的监听函数。
 
 
 
