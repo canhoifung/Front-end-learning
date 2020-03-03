@@ -376,11 +376,11 @@ myStyleSheet instanceof StyleSheet // true
 
 其中网页样式表即`CSSStyleSheet`
 
-## 实例属性
+### 实例属性
 
 `StyleSheet`实例具有以下属性：
 
-### StyleSheet.disabled
+#### StyleSheet.disabled
 
 返回一个布尔值，表示该样式表是否处于禁用状态
 
@@ -388,7 +388,7 @@ myStyleSheet instanceof StyleSheet // true
 
 > 只能在JavaScript脚本中设置，不能在HTML语句中设置
 
-### StyleSheet.href
+#### StyleSheet.href
 
 返回样式表的网址
 
@@ -400,7 +400,7 @@ myStyleSheet instanceof StyleSheet // true
 document.styleSheets[0].href
 ```
 
-### StyleSheet.media
+#### StyleSheet.media
 
 返回一个类似数组的对象（`MediaList`实例），成员是表示适用媒介的字符串
 
@@ -420,11 +420,11 @@ document.styleSheets[0].media.appendMedium('handheld');
 document.styleSheets[0].media.deleteMedium('print');
 ```
 
-### StyleSheet.title
+#### StyleSheet.title
 
 返回样式表的`title`属性
 
-### StyleSheet.type
+#### StyleSheet.type
 
 返回样式表的`type`属性，通常是`text/css`
 
@@ -432,7 +432,7 @@ document.styleSheets[0].media.deleteMedium('print');
 document.styleSheets[0].type  // "text/css"
 ```
 
-### StyleSheet.parentStyleSheet
+#### StyleSheet.parentStyleSheet
 
 返回包含了当前样式表的那张样式表
 
@@ -448,7 +448,7 @@ if (stylesheet.parentStyleSheet) {
 }
 ```
 
-### StyleSheet.ownerNode
+#### StyleSheet.ownerNode
 
 返回`StyleSheet`对象所在的DOM节点，通常是`<link>`或`<style>`
 
@@ -460,7 +460,7 @@ if (stylesheet.parentStyleSheet) {
 document.styleSheets[0].ownerNode // [object HTMLLinkElement]
 ```
 
-### CSSStyleSheet.cssRules
+#### CSSStyleSheet.cssRules
 
 指向一个类似数组的对象（即`CSSRuleList`实例），成员为当前样式表的一条CSS规则
 
@@ -483,7 +483,7 @@ cssStyleSheet.cssRules[0].style.color = 'red';
 cssStyleSheet.cssRules[1].style.color = 'purple';
 ```
 
-### CSSStyleSheet.ownerRule
+#### CSSStyleSheet.ownerRule
 
 有些样式表是通过`@import`规则输入的，它的`ownerRule`属性会返回一个`CSSRule`实例，代表那行`@import`规则。如果当前样式表不是通过`@import`引入的，`ownerRule`属性返回`null`。
 
