@@ -119,11 +119,38 @@
    4.  Cursive：类似手写的字体，有趣有风格，有时用于标题
    5. Fantasy：包含某种风格的装饰性字体，有趣有风格
 
+## 2020.03.09
 
+1. Web字体常用格式：
+   + TrueType字体：`.ttf`
+     + IE8前不支持
+   + OpenType字体：`.otf`
+     + otf建立在ttf的基础上，要更新
+   + Embedded OpenType字体：`.eot`
+     + 仅IE提供支持
+   + SVG字体：`.svg`
+   + Web开放字体格式：`.woff`
+     + 建立在ttf的基础上，基本已经成为字体标准
+     + IE8前不支持
 
+2. 在CSS的`body{}`之上添加`@font-face`属性
 
+   ```css
+   @font-face{
+       font-family:'Emblema One';
+       src:url('http://www.a.com/EmblemaOne.woff'),
+           url('http://www.a.com/EmblemaOne.ttf');
+   };
+   
+   
+   h1{
+       font-family:'Emblema One',sans-serif;
+   }
+   ```
 
+3. 给`body`指定一个关键字尺寸，控制页面默认字体大小，其他元素使用`em`或百分数   从而页面可以整体实现字体大小变化
 
+4. ==**==`em`指父元素的字体尺寸，不要用在宽高的设置上
 
 
 
