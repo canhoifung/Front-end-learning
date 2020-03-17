@@ -84,7 +84,7 @@
 
 [CSS操作](javascript/CSS操作.md)
 
-[Mutation Obser ver API](javascript/Mutation Obser ver API.md)
+[Mutation Observer API](javascript/Mutation Observer API.md)
 
 
 
