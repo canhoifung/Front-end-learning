@@ -152,7 +152,47 @@
 
 4. ==**==`em`指父元素的字体尺寸，不要用在宽高的设置上
 
+## 2020.03.15
 
+1. 若要同时获得下划线和上划线，需要这样写：
+
+   ```css
+   em{
+       text-decoration:underline overline;
+   }
+   ```
+
+   而不是：
+
+   ```css
+   em{
+       text-decoration:underline;
+   }
+   em{
+       text-decoration:overline;
+   }
+   ```
+
+2. 背景图像设置属性：
+
+   + `background-image:url(...gif)`
+   + `background-repeat:no-repeat`
+   + `background-position:top left`
+
+3. 媒体查询：
+
+   ```css
+   @media screen and (min-device-width:481px){}
+   @meadia print{}
+   ```
+
+   或者：
+
+   ```html
+   <link href='loung-mobile.css' rel='stylesheet' media='screen and (max-device-width:480px)'>
+   ```
+
+   
 
 
 
