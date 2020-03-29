@@ -192,15 +192,23 @@
    <link href='loung-mobile.css' rel='stylesheet' media='screen and (max-device-width:480px)'>
    ```
 
-   
 
 
 
+## 2020.03.29
 
+1. `text-align` 并不知针对文本，可以将块元素内的所有内联元素对齐，且只能设定在块元素上，否则无效
+2. `text-align`能将div中块元素的布局改变是由于它们继承了div元素的`text-align`属性
 
+3. `margin`、`padding` 可以简写
 
+   ``background` 、`border`、可以简写 顺序不重要
 
+   `font: font-style font-variant font-weitht font-size/line-height font-family`
 
+   （font-style font-variant font-weight 这三个顺序不重要 但是需要在font-size前面）
+
+-
 
 
 
