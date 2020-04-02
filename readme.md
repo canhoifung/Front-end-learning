@@ -20,6 +20,14 @@
 
 # JavaScript
 
+## 语法
+
+[数据类型及转换](javascript/数据类型及转换.md)
+
+[错误处理机制](javascript/错误处理机制.md)
+
+[console对象与控制台](javascript/console对象与控制台.md)
+
 ## 标准库
 
 [Object对象](javascript/Object对象.md)
