@@ -258,13 +258,69 @@
 + body内弄一个大的`div`，设置css：`width:400px; margin-left:auto; margin-right:auto`实现固定宽度居中
 + 有页脚的话需要设置`clear:left`清除左边浮动
 
+## 2020.04.12
+
+### table
+
+```html
+<div id='tableContainer'>
+    <div id='tableRow'>
+        <div id='main'>
+            //..
+        </div>
+        <div id='sidebar'>
+            //..
+        </div>
+    </div>
+</div>
+```
+
+```css
+div#tableContainer{
+    display:table;
+    border-spacing:10px; //边框间距 替代外边距
+}
+div#tableRow{
+    display:table-row;
+}
+
+#main{
+    display:table-cell;
+}
+#sidebar{
+    display:table-cell;
+}
+```
+
+1. `border-spacing`，边框间距不会和外边距重叠
 
 
 
+### fixed定位
+
+对于浏览器窗口进行定位
 
 
 
+## 2020.04.13
 
+1. HTML5语义化标签：
+
+   + `<header>`
+   + `<footer>`
+   + `<section>`
+   + `<aside>`
+   + `<article>`
+   + `<nav>`
+   + 等
+
+2. `<time>`标签
+
+   `<time datetime="2020-04-13">13/4/2020</time>`
+
+   标准格式为：`2020-04-13 22:09:55Z`
+
+   可以只指定年、年月、年月日、年月日时分、时分  最后的Z为时区，有TZD
 
 
 
