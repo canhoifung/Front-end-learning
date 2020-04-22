@@ -20,6 +20,12 @@
 
 # JavaScript
 
+
+
+## 运算符
+
+[运算符](javascript/运算符.md)
+
 ## 语法
 
 [数据类型及转换](javascript/数据类型及转换.md)
@@ -124,8 +130,6 @@
 [数据类型及转换](javascript/数据类型及转换.md)
 
 [循环基础](javascript/循环基础.md)
-
-[运算符](javascript/运算符.md)
 
 [字符串操作](javascript/字符串操作.md)
 
