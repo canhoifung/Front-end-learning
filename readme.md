@@ -20,7 +20,11 @@
 
 # JavaScript
 
+## 数据类型
 
+[数据类型及转换](javascript/数据类型及转换.md)
+
+[函数基础](javascript/函数基础.md)
 
 ## 运算符
 
@@ -115,8 +119,6 @@
 
 [对象基础](javascript/对象基础.md)
 
-[函数基础](javascript/函数基础.md)
-
 [基本语法、杂项](javascript/基本语法、杂项.md)
 
 [浏览器相关](javascript/浏览器相关.md)
@@ -126,8 +128,6 @@
 [浅拷贝 深拷贝](javascript/浅拷贝 深拷贝.md)
 
 [浅克隆 深克隆](javascript/浅克隆 深克隆.md)
-
-[数据类型及转换](javascript/数据类型及转换.md)
 
 [循环基础](javascript/循环基础.md)
 
