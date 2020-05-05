@@ -322,9 +322,68 @@ div#tableRow{
 
    可以只指定年、年月、年月日、年月日时分、时分  最后的Z为时区，有TZD
 
+## 2020.05.05
 
+1. `<video>`
 
+   ```html
+   <video controls     //设置了播放器会提供控件用于控制视频或音频播放
+          autoplay     //设置了会让视频自动播放
+          width='512' height='288'
+          src='video/video.mp4'
+          poster='images/video_poster.png'  //视频海报
+          id='video'>
+   </video>
+   ```
 
+   其他属性：
+
+   + preload：设置为`none`则用户播放前不下载视频；设置为`metadata`则下载视频元数据（比如时长），不下载视频内容；设置为`auto`则由浏览器做决定
+
+     设置了autoplay则会忽略这个属性
+
+   + loop：设置了就会循环播放
+
+   ==*==设置了width，height的话视频仍然会保持原始宽高比，多余空间会用黑边填充
+
+2. 视频编码
+
+   一个视频文件包括了音频编码和视频编码两部分
+
+   主流三种视频格式：
+
+   1. WebM：Vp8视频编码+Vorbis音频编码
+   2. MP4：H.264视频编码+AAC音频编码
+   3. Ogg：Theora视频编码+Vorbis音频编码
+
+   
+
+   提供多种格式的视频以便浏览器选择：
+
+   ```html
+   <video width='512' height='288'>
+   	<source src='video/video.mp4'>
+   	<source src='video/video.webm'>
+   	<source src='video/video.ogv'
+                type='video/ogg ; codecs="thoera,vorbis"'
+               //      视频文件MIME类型     视频编解码器，音频编解码器
+               //    用于为浏览器提供帮助决定是否可以播放这个文件，提高效率
+               >
+       <p>
+           your browser 不支持
+       </p>
+   </video>
+   ```
+
+### table标签
+
+`<caption>`标题，要作为table下第一个元素
+
+`<tr>`表示行
+
+`<td>`表示列
+
+`<th>`表示表头
 
 
 
