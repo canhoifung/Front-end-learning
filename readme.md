@@ -26,6 +26,8 @@
 
 [函数基础](javascript/函数基础.md)
 
+[数组操作](javascript/数组操作.md)
+
 ## 运算符
 
 [运算符](javascript/运算符.md)
@@ -103,6 +105,8 @@
 [CSS操作](javascript/CSS操作.md)
 
 [Mutation Observer API](javascript/Mutation Observer API.md)
+
+## 事件
 
 
 
