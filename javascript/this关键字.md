@@ -6,7 +6,7 @@
 
 `this`总是返回一个对象
 
-`this`就是属性或方法‘当前’所在的对象
+`this`就是属性或方法==当前==所在的对象
 
 ```javascript
 var person = {
