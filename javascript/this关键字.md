@@ -256,6 +256,46 @@ var hello = a.b.m;
 hello() // undefined
 ```
 
+### 箭头函数
+
+箭头函数的this取决于外层作用域中的this，且一旦绑定后无法修改
+
+若要修改需要修改外层作用域的this
+
+```javascript
+function fn() {
+    return () => {
+        console.log(this.name);
+    };
+}
+let obj1 = {
+    name: '听风是风'
+};
+let obj2 = {
+    name: '时间跳跃'
+};
+let bar = fn.call(obj1); // fn this指向obj1
+bar.call(obj2); //听风是风
+```
+
+```javascript
+function fn() {
+    return () => {
+        console.log(this.name);
+    };
+};
+let obj1 = {
+    name: '听风是风'
+};
+let obj2 = {
+    name: '时间跳跃'
+};
+fn.call(obj1)(); // fn this指向obj1,箭头函数this也指向obj1
+fn.call(obj2)(); //fn this 指向obj2,箭头函数this也指向obj2
+```
+
+
+
 ## 使用注意点
 
 ### 避免多层`this`
