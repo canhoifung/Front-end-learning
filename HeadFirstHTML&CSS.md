@@ -387,15 +387,99 @@ div#tableRow{
 
 
 
+## 2020.05.23  P610-645
 
+### table标签2.0
 
+1. 表格单元格也有内容、内边距、边框，但是外边距由`border-spacing`替代，表示单元格之间的空间
 
+   ==*==`border-spacing`不能设定特定单元格，而是所有单元格公有的设置
 
+2. `border-collapse:collapse;`，这个CSS设置可以忽略表格设置的所有边框间距，将他们合并在一起
 
+3. nth-child伪类：
 
+   ```css
+   p:nth-child(even){}; //偶数p
+   p:nth-child(odd){}; //奇数p
+   ```
 
+4. `rowspan`设置单元格跨行
 
+   `colspan`设置单元格跨列
 
+5. table内的td可以嵌套table
+
+## 2020.05.25 P645-666
+
+1. 表单工作流程：
+
+   浏览器--表单打包数据--web服务器--通过服务器脚本处理--返回HTML页面作为响应--浏览器显示响应HTML页面
+
+2. 表单元素：`<form>`
+
+   ```html
+   <form action='https://www.test.com/test/test.php' method="POST">
+       
+   </form>
+   ```
+
+   test.php为处理数据的服务器脚本文件名
+
+3. 表单元素
+
+   ```html
+   <input type='text' name='fullname' maxlength="20">
+   //文本输入框
+   ```
+
+   ```html
+   <input type="submit" value="Submit Now">
+   //提交按钮
+   ```
+
+   ```html
+   <input type="radio" name="radiochose" value="radio">
+   //与一组给定选项关联的单选按钮必须有相同的name，可以有不同的value
+   ```
+
+   ```html
+   <input type="checkbox" name="checkboxchose" value="check">
+   ```
+
+   ```html
+   <textarea name="comments" rows="10" cols"48"></textarea>
+   //开始和结束标签之间的文本会作为初始文本
+   ```
+
+   ```html
+   <select name="characters">
+       <option value="apple">Apple</option>
+       <option value="banana">Banana</option>
+   </select>
+   ```
+
+   ```html
+   //HTML5元素 若不支持就显示普通文本输入框
+   <input type="number" min="0" max="20">
+   //限制只能输入数字的输入框
+   <input type="range" min="10" max="20" step="5">
+   //滑块
+   <input type="color">
+   //颜色输入
+   <input type="date">
+   //日期选择控件
+   <input type="email">
+   //在部分移动浏览器上，会得到一个方便输入email的定制键盘
+   <input type="url">
+   //同上，在部分移动浏览器中获得方便输入url的定制键盘
+   <input type="tel">
+   //同上
+   ```
+
+   ==*==提交表单时，浏览器会使用name来打包所有数据  因此都要添加上name的属性
+
+   ​	
 
 
 
