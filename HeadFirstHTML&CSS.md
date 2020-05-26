@@ -431,34 +431,36 @@ div#tableRow{
    ```html
    <input type='text' name='fullname' maxlength="20">
    //文本输入框
+   <input type="passwor" name="secret">
+//密码输入框
    ```
-
+   
    ```html
    <input type="submit" value="Submit Now">
-   //提交按钮
+//提交按钮
    ```
-
+   
    ```html
    <input type="radio" name="radiochose" value="radio">
-   //与一组给定选项关联的单选按钮必须有相同的name，可以有不同的value
+//与一组给定选项关联的单选按钮必须有相同的name，可以有不同的value
    ```
-
+   
    ```html
-   <input type="checkbox" name="checkboxchose" value="check">
+<input type="checkbox" name="checkboxchose" value="check">
    ```
-
+   
    ```html
    <textarea name="comments" rows="10" cols"48"></textarea>
-   //开始和结束标签之间的文本会作为初始文本
+//开始和结束标签之间的文本会作为初始文本
    ```
-
+   
    ```html
    <select name="characters">
        <option value="apple">Apple</option>
        <option value="banana">Banana</option>
-   </select>
+</select>
    ```
-
+   
    ```html
    //HTML5元素 若不支持就显示普通文本输入框
    <input type="number" min="0" max="20">
@@ -474,12 +476,73 @@ div#tableRow{
    <input type="url">
    //同上，在部分移动浏览器中获得方便输入url的定制键盘
    <input type="tel">
-   //同上
+//同上
    ```
 
    ==*==提交表单时，浏览器会使用name来打包所有数据  因此都要添加上name的属性
-
+   
    ​	
+
+## 2020.05.26 P666-700
+
+1. ```html
+   <input type="radio" name="test" checked value="test">
+   //添加checked属性默认选中
+   ```
+
+2. POST请求：打包表单变量，在后台将它们发送到服务器；
+
+3. GET请求：打包表单变量，记那个它们追加到URL的最后，然后向服务器发送一个请求
+
+4. `<label>`元素，标记标签，让页面提供更好的页面结构
+
+   ```html
+   <input type="radio" name="hotornot" value="hot" id="hot">
+   <label for="hot">hot</label>
+   <input type="radio" name="hotornot" value="not" id="not">
+   <label for="not">not</label>
+   ```
+
+   ==**==`<label>`标签中的for要对应表单的id
+
+   ==*==标签放表单控件前后并没有关系
+
+5. `<fieldset>`用于将表单控件组织在一起，`<legend>`为一组表单提供标签
+
+   ```html
+   <fieldset>
+       <legend>
+           Condiments
+       </legend>
+       <input type="radio" name="hotornot" value="hot" id="hot">
+       <label for="hot">hot</label>
+       <input type="radio" name="hotornot" value="not" id="not">
+       <label for="not">not</label>
+   </fieldset>
+   ```
+
+6. ```html
+   <input type="file" name="doc">
+   //文件输入
+   ```
+
+   只能使用post
+
+7. ```html
+   <select name="characters" multiple>
+       <option></option>
+   </select>
+   ```
+
+   多选下拉菜单
+
+8. `placeholder`属性，输入内容提示语
+
+   ```html
+   <input type="text" placeholder="请输入名字">
+   ```
+
+9. `required`属性，用于指示一个域是必要的，若为空则无法提交表单
 
 
 
