@@ -286,6 +286,36 @@ echo.name;//听风是风
 
 
 
+# 函数中的实参形参局部变量
+
+若实参为基本数据类型，传入函数的实际是实参的副本，存储在函数中的变量组中，因此在函数中修改实参值不会影响函数外的值
+
+若实参为复杂数据类型，传入函数的是地址，因此函数中修改实参会直接修改地址信息
+
+
+
+由于通过var重复声明的变量，会被忽略，因此在函数中若有声明实参，声明过程会被忽略
+
+```javascript
+var a=1;
+(function A(a){
+    console.log(a); //1
+    var a=2;
+    console.log(a);//2
+})(a);
+console.log(a); //1
+```
+
+```javascript
+var a=1;
+(function A(){
+    console.log(a); //undefined
+    var a=2;
+    console.log(a);//2
+})(a);
+console.log(a); //1
+```
+
 
 
 
