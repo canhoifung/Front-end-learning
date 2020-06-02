@@ -44,7 +44,7 @@
    + 默认端口为80，如果配置在另外一个不同的端口接受请求则另外说明
    + URL地址等于一个房间，而端口则是进入房间的门 通过不同的门接受不同的信息
 
-5. `<a title='title test'>title</a>` a标签的title属性
+5. `<a title='title test'>title</a>` a标签的title属性，鼠标悬停时显示title
 
 6. 锚点
 
@@ -96,8 +96,6 @@
 2. 如何告知浏览器页面编写所使用的编码：
 
    `<meta charset='utf-8'>` 标准统一使用Unicode字符编码
-
-
 
 ## 2020.03.02
 
@@ -202,7 +200,7 @@
 
 3. `margin`、`padding` 可以简写
 
-   ``background` 、`border`、可以简写 顺序不重要
+   `background` 、`border`、可以简写 顺序不重要
 
    `font: font-style font-variant font-weitht font-size/line-height font-family`
 
@@ -544,7 +542,34 @@ div#tableRow{
 
 9. `required`属性，用于指示一个域是必要的，若为空则无法提交表单
 
+## 2020.05.27 P701-完
 
+1. 开发商特定CSS属性：
+
+   如：`-moz-transform`，类似的还有：
+
+   + `-webkit-`  safari和chrome
+   + `-moz-`  Mozilla
+   + `-o-`    opera
+   + `-ms-`  IE
+
+2. CSS变换：通过`transform`属性
+
+3. CSS过度：通过`transition`属性
+
+   使用方法如：
+
+   ```css
+   div{
+       width:100px;
+       transition:width 2s;
+   }
+   div:hover{
+       width:300px;
+   }
+   ```
+
+   
 
 
 
