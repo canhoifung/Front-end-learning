@@ -318,9 +318,134 @@ console.log(a); //1
 
 
 
+# 只有函数对象有prototype属性
+
+```javascript
+function Foo(){};
+var foo = new Foo();
+```
+
+foo是一个实例对象，但不是一个函数，因此没有prototype
+
+Function，Object，Array，RegExp都是函数
+
+所有对象都会有`__proto__`属性，指向构造函数的prototype
+
+原型链就是根据`__proto_`属性往上的过程，查找对象属性方法时，对象没有，就到`constructor`去找，没有就到`__proto__`去找，再没有就到`__proto__.constructor`去找
+
+![img](JS疑难杂症.assets/13902845-babea8f0cde0d791.webp)
+
+而`Object.create()`则是创建一个新对象，用参数对象作为新对象的`__proto__`
 
 
 
+# 宏任务和微任务
+
+异步任务的两种
+
+![img](JS疑难杂症.assets/1053223-20180831162152579-2034514663.png)
+
+![img](JS疑难杂症.assets/1053223-20180831162350437-143973108.png)
+
+例子：
+
+```javascript
+//同步任务
+console.log(1);
+//宏任务
+setTimeout(()=>{
+    console.log(2);
+},0);
+//微任务
+Promise.resolve(3).then(b=>{
+    console.log(b);
+});
+
+//  1 3 2
+```
+
+## 宏任务
+
+| #                     | 浏览器 | Node |
+| --------------------- | ------ | ---- |
+| setTimeout            | √      | √    |
+| setInterval           | √      | √    |
+| setImmediate          | x      | √    |
+| requestAnimationFrame | √      | x    |
+
+## 微任务
+
+| #                          | 浏览器 | Node |
+| -------------------------- | ------ | ---- |
+| process.nextTick           | x      | √    |
+| MutationObserver           | √      | x    |
+| Promise.then catch finally | √      | √    |
+
+## 例子
+
+```javascript
+//主线程直接执行
+console.log('1');
+//丢到宏事件队列中
+setTimeout(function() {
+    console.log('2');
+    /**
+    node.js下执行的
+    process.nextTick(function() {
+        console.log('3');
+    }) 
+    **/
+    new Promise(function(resolve) {
+        console.log('4');
+        resolve();
+    }).then(function() {
+        console.log('5')
+    })
+})
+//微事件1
+/**
+node.js下执行的
+process.nextTick(function() {
+    console.log('6');
+})
+**/
+//主线程直接执行
+new Promise(function(resolve) {
+    console.log('7');
+    resolve();
+}).then(function() {
+    //微事件2
+    console.log('8')
+})
+//丢到宏事件队列中
+setTimeout(function() {
+    console.log('9');
+    /**
+    node.js下执行的
+    process.nextTick(function() {
+        console.log('10');
+    })
+    **/
+    new Promise(function(resolve) {
+        console.log('11');
+        resolve();
+    }).then(function() {
+        console.log('12')
+    })
+})
+```
+
+首先浏览器执行js进入第一个宏任务进入主线程, 直接打印console.log('1')
+
++ 遇到 **setTimeout**  分发到宏任务Event Queue中
++ 遇到 process.nextTick 丢到微任务Event Queue中
++ 遇到 Promise， new Promise 直接执行 输出 console.log('7');
++ 执行then 被分发到微任务Event Queue中``
++ 第一轮宏任务执行结束，开始执行微任务 打印 6,8
++ 第一轮微任务执行完毕，执行第二轮宏事件，执行setTimeout
++ 先执行主线程宏任务，在执行微任务，打印'2,4,3,5'
++ 在执行第二个setTimeout,同理打印 ‘9,11,10,12’
++ 整段代码，共进行了三次事件循环，完整的输出为1，7，6，8，2，4，3，5，9，11，10，12。
 
 
 
