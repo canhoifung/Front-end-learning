@@ -217,21 +217,127 @@ var result = confirm('hello');
 
 返回布尔值，确定就true取消就false
 
+### window.open()，window.close()，window.stop()
 
+#### window.open()
 
+弹出一个新建窗口
 
+返回新窗口的引用，若无法新建则返回`null`
 
+```javascript
+window.open(url,windowName,[windowFeatures]);
+```
 
+- `url`：字符串，表示新窗口的网址。如果省略，默认网址就是`about:blank`。
 
+- `windowName`：字符串，表示新窗口的名字。如果该名字的窗口已经存在，则占用该窗口，不再新建窗口。如果省略，就默认使用`_blank`，表示新建一个没有名字的窗口。另外还有几个预设值，`_self`表示当前窗口，`_top`表示顶层窗口，`_parent`表示上一层窗口。
 
+  ==*==只有在两个窗口同源或目标窗口被当前网页打开，才能指向该窗口
 
+- `windowFeatures`：字符串，内容为逗号分隔的键值对（详见下文），表示新窗口的参数，比如有没有提示栏、工具条等等。如果省略，则默认打开一个完整 UI 的新窗口。如果新建的是一个已经存在的窗口，则该参数不起作用，浏览器沿用以前窗口的参数
 
+```javascript
+var popup = window.open(
+  'somepage.html',
+  'DefinitionsWindows',
+  'height=200,width=200,location=no,status=yes,resizable=yes,scrollbars=yes'
+);
+```
 
+第三个参数可设置的属性：
 
+第三个参数可以设定如下属性。
 
+- left：新窗口距离屏幕最左边的距离（单位像素）。注意，新窗口必须是可见的，不能设置在屏幕以外的位置。
+- top：新窗口距离屏幕最顶部的距离（单位像素）。
+- height：新窗口内容区域的高度（单位像素），不得小于100。
+- width：新窗口内容区域的宽度（单位像素），不得小于100。
+- outerHeight：整个浏览器窗口的高度（单位像素），不得小于100。
+- outerWidth：整个浏览器窗口的宽度（单位像素），不得小于100。
+- menubar：是否显示菜单栏。
+- toolbar：是否显示工具栏。
+- location：是否显示地址栏。
+- personalbar：是否显示用户自己安装的工具栏。
+- status：是否显示状态栏。
+- dependent：是否依赖父窗口。如果依赖，那么父窗口最小化，该窗口也最小化；父窗口关闭，该窗口也关闭。
+- minimizable：是否有最小化按钮，前提是`dialog=yes`。
+- noopener：新窗口将与父窗口切断联系，即新窗口的`window.opener`属性返回`null`，父窗口的`window.open()`方法也返回`null`。
+- resizable：新窗口是否可以调节大小。
+- scrollbars：是否允许新窗口出现滚动条。
+- dialog：新窗口标题栏是否出现最大化、最小化、恢复原始大小的控件。
+- titlebar：新窗口是否显示标题栏。
+- alwaysRaised：是否显示在所有窗口的顶部。
+- alwaysLowered：是否显示在父窗口的底下。
+- close：新窗口是否显示关闭按钮。
 
+对于打开关闭的属性，设为`yes`或`1`或不设置属性就表示打开，设为关闭则省略属性
 
+==*==`tltlebar`和关闭按钮默认为`yes`
 
+#### window.close()
+
+用于关闭当前窗口，一般只用来关闭`window.open`新建的窗口
+
+==*==只对顶层窗口有效
+
+#### window.stop()
+
+停止加载图像、视频等正在或等待加载的对象
+
+### window.moveTo()，window.moveBy()
+
+`window.moveTo()`用于移动浏览器窗口到指定位置，接收两个参数，水平距离和垂直距离
+
+`window.moveBy()`用于将窗口移动到一个相对位置，两个参数为窗口左上角向右移动的水平距离和向下移动的垂直距离
+
+==*==需要窗口是`window.open()`方法新建的，且窗口只有它一个tab页，否则无效
+
+### window.resizeTo()，window.resizeBy()
+
+`window.resizeTo()`用于缩放窗口到指定大小，两个参数，缩放后的窗口宽度和高度（outerwidth和outerheight）
+
+```javascript
+window.resizeTo(
+	window.screen.availWidth/2,
+    window.screen.availHeight/2
+)
+```
+
+`window.resizeBy()`接收两个参数，水平垂直缩放的量，单位为像素
+
+### window.scrollTo()，window.scroll()，window.scrollBy()
+
+`window.scrollTo()`将文档滚动到指定位置，两个参数为滚动后位于窗口左上角的页面坐标，或者接受一个配置对象作为参数：
+
+```javascript
+window.scrollTo(x-coord,y-coord);
+window.scrollTo(options);
+```
+
+配置对象参数：
+
+- `top`：滚动后页面左上角的垂直坐标，即 y 坐标。
+- `left`：滚动后页面左上角的水平坐标，即 x 坐标。
+- `behavior`：字符串，表示滚动的方式，有三个可能值（`smooth`、`instant`、`auto`），默认值为`auto`。
+
+`window.scroll()`==`window.scrollTo()`
+
+`window.scroilBy()`用于将网页滚动指定距离，像素为单位。两个参数为水平向右和向下滚动的像素
+
+```javascript
+window.scrollBy(0,window.innerHeight);
+```
+
+### window.print()
+
+跳出打印对话框
+
+### window.focus()，window.blur()
+
+`window.focus()`激活窗口使其获得焦点出现在其他窗口前
+
+`window.blur()`将焦点从窗口移除
 
 
 
