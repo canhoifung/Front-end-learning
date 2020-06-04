@@ -447,9 +447,98 @@ setTimeout(function() {
 + 在执行第二个setTimeout,同理打印 ‘9,11,10,12’
 + 整段代码，共进行了三次事件循环，完整的输出为1，7，6，8，2，4，3，5，9，11，10，12。
 
+# 闭包
+
+```javascript
+function test(){
+    var n=4399;
+    function add(){
+        n++;
+        console.log(n);
+    }
+    
+    return {n:n,add:add};
+};
+var result = test();
+var result2 = test();
+result.add(); //4400
+result.add(); //4401
+console.log(result.n);  //4399
+result2.add(); //4400
+```
+
+此处`test()`产生了闭包，返回的函数`add()`获取到的是`test`中的`n`，与`result.n`无关
+
+若与`result.n`有关，则要用`this`绑定
+
+```javascript
+function test(){
+    var n=4399;
+    function add(){
+        this.n++;
+        console.log(this.n);
+    }
+    
+    return {n:n,add:add};
+};
+var result = test();
+var result2 = test();
+result.add(); //4400
+result.add(); //4401
+console.log(result.n);  //4401
+result2.add(); //4400
+```
+
+# new function()
+
+```javascript
+'foo' == new function(){return String('foo');}; // false
+
+'foo' == new function(){return new String('foo')};//true
+```
+
+String(‘foo’)  返回一个String类型的’foo’
+
+new String(‘foo’) 返回一个object类型的 String(‘foo’)
 
 
 
+首先了解一下new一个对象进行了什么操作：
+
+```javascript
+function Person(){
+    this.age = 1;
+};
+var person = new Person();
+```
+
+1. 创建空的JS对象
+
+   ```javascript
+   var obj = new Object();
+   ```
+
+2. 将空对象的原型链上级设置成Person的原型函数
+
+   ```javascript
+   obj.__proto__ = Person.prototype;
+   ```
+
+3. 更换this调用
+
+   ```javascript
+   Person.call(obj);
+   ```
+
+4. 返回obj
+
+   ```javascript
+   return obj;
+   ```
+
+此时如果new的函数返回了一个基础类型，会忽略基础类型，而返回创建的对象obj
+
+如果new的函数返回的是一个对象，会忽略新建的对象obj，返回函数中返回的对象
 
 
 
