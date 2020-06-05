@@ -339,6 +339,214 @@ window.scrollBy(0,window.innerHeight);
 
 `window.blur()`将焦点从窗口移除
 
+### window.getSelection()
+
+返回一个`Selection`对象，表示用户现在选中的文本，用`toString()`可以得到选中的文本
+
+```javascript
+var selectedText = window.getSelection().toString();
+```
+
+### window.getComputedStyle()，window.matchMedia()
+
+`window.getComputedStyle()`接收一个元素节点作为参数，返回包含该元素最终样式信息的对象
+
+`window.matchMedia()`用于检查CSS的`mediaQuery`语句
+
+### window.requestAnimationFrame()
+
+与`setTimeout`类似，推迟某个函数的执行，但是这个函数是推迟到浏览器下一次重流时执行，执行完才会进行下一次重绘
+
+重流一般16ms执行一次，但网页切换到后台Tab页时会暂停执行函数
+
+一般用于推迟某个会改变网页布局的函数
+
+接收一个回调函数作为参数，回调函数执行的参数为系统传入的高精度时间戳(`performance.now()`的返回值，单位ms)
+
+返回一个整数，可以用于传入`window.cancelAnimationFrame()`用于取消回调函数的执行
+
+```javascript
+var element = document.getElementById('animate');
+element.style.position = 'absolute';
+
+var start = null;
+
+function step(timestamp) {
+  if (!start) start = timestamp;
+  var progress = timestamp - start;
+  // 元素不断向左移，最大不超过200像素
+  element.style.left = Math.min(progress / 10, 200) + 'px';
+  // 如果距离第一次执行不超过 2000 毫秒，
+  // 就继续执行动画
+  if (progress < 2000) {
+    window.requestAnimationFrame(step);
+  }
+}
+
+window.requestAnimationFrame(step);
+```
+
+### window.requestIdleCallback()
+
+与`setTimeout`类似，但是这个函数会保证将回调函数推迟到系统资源空闲时执行
+
+可以保证网页性能
+
+接受一个回调函数和配置对象作为参数，配置对象可以指定一个推迟执行的最长时间
+
+超过时间无论系统资源是否空闲都会执行
+
+```javascript
+window.requestIdleCallback(callback[,options]);
+```
+
+`callback`函数执行时，系统会传入一个`IdleDeadline`对象作为参数
+
+`IdleDeadline`对象有一个`didTimeout`属性，布尔值，表示是否超时调用，以及一个`timeRemaining()`方法，返回该空闲时段剩余的毫秒数，超时就返回0
+
+`options`配置对象只有一个`timeout`属性，用于指定推迟执行的最大毫秒数
+
+该方法返回一个整数，可以传入`window.cancalIdleCallback()`取消回调函数
+
+```javascript
+requestIdleCallback(myNonEssentialWork);
+
+function myNonEssentialWork(deadline) {
+  while (deadline.timeRemaining() > 0) {
+    doWorkIfNeeded();
+  }
+}
+```
+
+## 事件
+
+### load，onload
+
+`load`发生在==文档在浏览器窗口加载完毕的时候==
+
+`window.onload`属性用于指定这个事件的回调函数
+
+### errror，onerror
+
+==一般只有浏览器脚本发生错误时触发==
+
+回调函数不接受错误对象作为参数，接受一下参数：
+
+- 出错信息
+- 出错脚本的网址
+- 行号
+- 列号
+- 错误对象
+
+```javascript
+window.onerror = function (message, filename, lineno, colno, error) {
+  console.log("出错了！--> %s", error.stack);
+};
+```
+
+> 如果脚本网址与网页网址不在同一个域（比如使用了 CDN），浏览器根本不会提供详细的出错信息，只会提示出错，错误类型是“Script error.”，行号为0，其他信息都没有
+
+解决办法：
+
+在脚本所在的服务器，设置`Access-Control-Allow-Origin`的 HTTP 头信息。
+
+```JavaScript
+Access-Control-Allow-Origin: *
+```
+
+然后，在网页的`<script>`标签中设置`crossorigin`属性。
+
+``` html
+<script crossorigin="anonymous" src="//example.com/file.js"></script>
+```
+
+上面代码的`crossorigin="anonymous"`表示，读取文件不需要身份信息，即不需要 cookie 和 HTTP 认证信息。如果设为`crossorigin="use-credentials"`，就表示浏览器会上传 cookie 和 HTTP 认证信息，同时还需要服务器端打开 HTTP 头信息`Access-Control-Allow-Credentials`
+
+### window对象的事件监听属性
+
+- `window.onafterprint`：`afterprint`事件的监听函数。
+- `window.onbeforeprint`：`beforeprint`事件的监听函数。
+- `window.onbeforeunload`：`beforeunload`事件的监听函数。
+- `window.onhashchange`：`hashchange`事件的监听函数。
+- `window.onlanguagechange`: `languagechange`的监听函数。
+- `window.onmessage`：`message`事件的监听函数。
+- `window.onmessageerror`：`MessageError`事件的监听函数。
+- `window.onoffline`：`offline`事件的监听函数。
+- `window.ononline`：`online`事件的监听函数。
+- `window.onpagehide`：`pagehide`事件的监听函数。
+- `window.onpageshow`：`pageshow`事件的监听函数。
+- `window.onpopstate`：`popstate`事件的监听函数。
+- `window.onstorage`：`storage`事件的监听函数。
+- `window.onunhandledrejection`：未处理的 Promise 对象的`reject`事件的监听函数。
+- `window.onunload`：`unload`事件的监听函数。
+
+## 多窗口操作
+
+### 窗口引用
+
++ `top`：顶层窗口
++ `parent`：父窗口
++ `self`：当前窗口
+
+特殊窗口名：
+
++ `_top`：顶层窗口
++ `_parent`：父窗口
++ `_blank`：新窗口
+
+### iframe元素
+
+可以使用`document.getElementById`获取iframe嵌入的窗口的DOM节点
+
+使用`content.Window`属性获取iframe节点的`window`对象
+
+```javascript
+var frame = document.getElementById('frame');
+var frameWindow = frame.contentWindow;
+```
+
+同源下就可以读取子窗口内部属性
+
+```javascript
+frameWindow.title;
+frame.contentDocument;
+//等同于
+frame.contentWindow.document;
+```
+
+iframe窗口的`window`对象有一个`frameElement`属性，返回`<iframe>`在父窗口中的DOM节点
+
+若无则返回`null`
+
+### window.frames
+
+返回类似数组的对象，成员为所有子窗口的`window`对象
+
+==**==若iframe元素设置了`name`或者`id`属性，则属性会自动变为全局变量
+
+```javascript
+// HTML 代码为 <iframe id="myFrame">
+window.myFrame // [HTMLIFrameElement]
+```
+
+且`name`属性会自动成为子窗口的名称
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
