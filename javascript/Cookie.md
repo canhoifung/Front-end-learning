@@ -131,6 +131,113 @@ Set-Cookie: id=a3fWa; Expires=Wed, 21 Oct 2015 07:28:00 GMT;
 
 比如，`PATH`属性是`/`，那么请求`/docs`路径也会包含该 Cookie
 
+### Secure
+
+指定浏览器只有在加密协议HTTPS下，才能将Cookie发送到服务器
+
+若当前协议是HTTP，浏览器会自动忽略服务器的`Secure`属性
+
+若通信是HTTPS协议，自动带有这个属性
+
+### HttpOnly
+
+指定该Cookie无法通过JavaScript脚本获取，即`document.cookie`和`XMLHttpRequest`对象和RequestAPI都无法获取
+
+只有当浏览器发送HTTP请求时才会带上
+
+### SameSite
+
+用于防止CSRF攻击和用户追踪
+
+用来限制第三方Cookie，减少安全风险
+
+可以设置三个值：
+
++ Strict
++ Lax
++ None
+
+#### Strict
+
+完全禁止第三方Cookie，跨站点时任何情况下都不会发送Cookie
+
+```javascript
+Set-Cookie: CookieName=CookieValue; SameSite=Strict;
+```
+
+#### Lax
+
+除了导航到目标网址的Get请求外不发送第三方Cookie
+
+```javascript
+Set-Cookie: CookieName=CookieValue; SameSite=Strict;
+```
+
+只包括三种情况：
+
++ 链接
++ 预加载请求
++ GET表单
+
+| 请求类型  |                 示例                 |    正常情况 | Lax         |
+| :-------- | :----------------------------------: | ----------: | :---------- |
+| 链接      |         `<a href="..."></a>`         | 发送 Cookie | 发送 Cookie |
+| 预加载    | `<link rel="prerender" href="..."/>` | 发送 Cookie | 发送 Cookie |
+| GET 表单  |  `<form method="GET" action="...">`  | 发送 Cookie | 发送 Cookie |
+| POST 表单 | `<form method="POST" action="...">`  | 发送 Cookie | 不发送      |
+| iframe    |    `<iframe src="..."></iframe>`     | 发送 Cookie | 不发送      |
+| AJAX      |            `$.get("...")`            | 发送 Cookie | 不发送      |
+| Image     |          `<img src="...">`           | 发送 Cookie | 不发送      |
+
+#### None
+
+显示关闭`SameSite`属性
+
+必须同时设置`Secure`属性，否则无效
+
+下面的设置无效。
+
+```javascript
+Set-Cookie: widget_session=abc123; SameSite=None
+```
+
+下面的设置有效。
+
+```JavaScript
+Set-Cookie: widget_session=abc123; SameSite=None; Secure
+```
+
+## document.cookie
+
+用于读写当前网页的Cookie
+
+若Cookie没有`HTTPOnly`属性，就可以返回当前网页的所有Cookie
+
+==可写==，但一次只能写入一个Cookie，且不会覆盖，而是添加
+
+```javascript
+document.cookie = "foo=bar; expires=Fri, 31 Dec 2020 23:59:59 GMT";
+```
+
+各个属性的写入注意点如下。
+
+- `path`属性必须为绝对路径，默认为当前路径。
+- `domain`属性值必须是当前发送 Cookie 的域名的一部分。比如，当前域名是`example.com`，就不能将其设为`foo.com`。该属性默认为当前的一级域名（不含二级域名）。
+- `max-age`属性的值为秒数。
+- `expires`属性的值为 UTC 格式，可以使用`Date.prototype.toUTCString()`进行日期格式转换。
+
+删除现存Cookie的唯一方法，是设置它的`expires`属性为一个过去的日期
+
+
+
+
+
+
+
+
+
+
+
 
 
 
