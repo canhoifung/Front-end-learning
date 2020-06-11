@@ -499,13 +499,200 @@ xhr.onload = getHeaderTime;
 xhr.send();
 ```
 
+如果有多个字段同名，它们的值会被连接为一个字符串，每个字段之间使用“逗号+空格”分隔
+
+### XMLHttpRequest.getAllResponseHeaders()
+
+返回一个字符串，表示服务器发来的所有HTTP头信息
+
+每个头信息之间用回车+换行分隔，若无则为`null`，若网络错误，则为空字符串
+
+```javascript
+var xhr = new XMLHttpRequest();
+xhr.open('GET', 'foo.txt', true);
+xhr.send();
+
+xhr.onreadystatechange = function () {
+  if (this.readyState === 4) {
+    var headers = xhr.getAllResponseHeaders();
+  }
+}
+```
+
+返回的字符串可能是这样的：
+
+```php
+date: Fri, 08 Dec 2017 21:04:30 GMT\r\n
+content-encoding: gzip\r\n
+x-content-type-options: nosniff\r\n
+server: meinheld/0.6.1\r\n
+x-frame-options: DENY\r\n
+content-type: text/html; charset=utf-8\r\n
+connection: keep-alive\r\n
+strict-transport-security: max-age=63072000\r\n
+vary: Cookie, Accept-Encoding\r\n
+content-length: 6502\r\n
+x-xss-protection: 1; mode=block\r\n
+```
+
+处理：
+
+```javascript
+var arr = headers.trim().split(/[\r\n]+/);
+var headerMap = {};
+
+arr.forEach(function (line) {
+  var parts = line.split(': ');
+  var header = parts.shift();
+  var value = parts.join(': ');
+  headerMap[header] = value;
+});
+
+headerMap['content-length'] // "6502"
+```
+
+### XMLHttpRequest.abort()
+
+用于终止已经发出的HTTP请求
+
+调用后`readyState==4`,`state==0`
+
+```javascript
+var xhr = new XMLHttpRequest();
+xhr.open('GET', 'http://www.example.com/page.php', true);
+setTimeout(function () {
+  if (xhr) {
+    xhr.abort();
+    xhr = null;
+  }
+}, 5000);
+```
+
+## 实例事件
+
+### readyStateChange事件
+
+`readyState`值发生改变时触发
+
+通过`onreadyStateChange`监听
+
+### progress事件
+
+返回上传的进度，在上传文件时实例对象本身和实例的`load`属性都有这个事件
+
+```javascript
+var xhr = new XMLHttpRequest();
+
+function updateProgress (oEvent) {
+  if (oEvent.lengthComputable) {
+    var percentComplete = oEvent.loaded / oEvent.total;
+  } else {
+    console.log('无法计算进展');
+  }
+}
+
+xhr.addEventListener('progress', updateProgress);
+
+xhr.open();
+```
+
+### load事件，error事件，abort事件
+
+分别为 服务器传来的数据接收完毕；请求出错；请求被中断
+
+### loadend事件
+
+上面三个事件后都会伴随这个事件，表示请求结束，但无法得知是否成功
+
+### timeout事件
+
+服务器超过指定时间还没有返回结果时触发
+
+## Navigator.sendBeacon()
+
+用户卸载网页的时候，有时需要向服务器发一些数据
+
+很自然的做法是在`unload`事件或`beforeunload`事件的监听函数里面，使用`XMLHttpRequest`对象发送数据。但是，这样做不是很可靠，因为`XMLHttpRequest`对象是异步发送，==很可能在它即将发送的时候，页面已经卸载了==，从而导致发送取消或者发送失败。
+
+解决方法就是`unload`事件里面，加一些很耗时的同步操作。这样就能留出足够的时间，保证异步 AJAX 能够发送成功。
+
+```javascript
+//强制执行双重循环拖长事件
+function log() {
+  let xhr = new XMLHttpRequest();
+  xhr.open('post', '/log', true);
+  xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+  xhr.send('foo=bar');
+}
+
+window.addEventListener('unload', function(event) {
+  log();
+  // a time-consuming operation
+  for (let i = 1; i < 10000; i++) {
+    for (let m = 1; m < 10000; m++) { continue; }
+  }
+});
+```
+
+```javascript
+//使用setTimeout定时器
+// HTML 代码如下
+// <a id="target" href="https://baidu.com">click</a>
+const clickTime = 350;
+const theLink = document.getElementById('target');
+
+function log() {
+  let xhr = new XMLHttpRequest();
+  xhr.open('post', '/log', true);
+  xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+  xhr.send('foo=bar');
+}
+
+theLink.addEventListener('click', function (event) {
+  event.preventDefault();
+  log();
+
+  setTimeout(function () {
+    window.location.href = theLink.getAttribute('href');
+  }, clickTime);
+});
+```
+
+但以上用户体验都不太好，因此引入`Navigator.sendBeacon()`方法
 
 
 
+该方法异步发出请求，但与当前页面线程脱钩，作为浏览器进程的任务
 
+```javascript
+window.addEventListener('unload', logData, false);
 
+function logData() {
+  navigator.sendBeacon('/log', analyticsData);
+}
+```
 
+接收两个参数：
 
++ 目标服务器的URL
++ 所要发送的数据（可选）
+
+返回一个布尔值，表示是否发送成功
+
+发送方法为POST，可以跨域，无法指定回调函数
+
+```javascript
+// HTML 代码如下
+// <body onload="analytics('start')" onunload="analytics('end')">
+
+function analytics(state) {
+  if (!navigator.sendBeacon) return;
+
+  var URL = 'http://example.com/analytics';
+  var data = 'state=' + state + '&location=' + window.location;
+  navigator.sendBeacon(URL, data);
+}
+```
 
 
 
