@@ -90,6 +90,156 @@ myBlob.slice(start, end, contentType)
 
 处于安全考虑，浏览器不允许脚本自行设置控件的`value`属性，一旦用户选好了文件，脚本才可以读取这个文件
 
+文件选择器返回一个`FileList`对象，为类似数组的成员，每个成员都是一个`File`实例对象
+
+`File`实例对象是特殊的Blob实例，多了`name`和`lastModifiedDate`属性
+
+```javascript
+// HTML 代码如下
+// <input type="file" accept="image/*" multiple onchange="fileinfo(this.files)"/>
+
+function fileinfo(files) {
+  for (var i = 0; i < files.length; i++) {
+    var f = files[i];
+    console.log(
+      f.name, // 文件名，不含路径
+      f.size, // 文件大小，Blob 实例属性
+      f.type, // 文件类型，Blob 实例属性
+      f.lastModifiedDate // 文件的最后修改时间
+    );
+  }
+}
+```
+
+## 下载文件
+
+AJAX请求时，如果`responseType`属性为`blob`，下载的就是一个Blob对象
+
+```javascript
+function getBlob(url, callback) {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', url);
+  xhr.responseType = 'blob';
+  xhr.onload = function () {
+      //xhr.response获取Blob对象
+    callback(xhr.response);
+  }
+  xhr.send(null);
+}
+```
+
+## 生成URL
+
+浏览器允许通过`URL.createObjectURL()`方法针对Blob对象生成临时URL以便某些API使用
+
+URL开头为`blob://`表示为Blob对象，协议头后为一个识别符，用于唯一对应内存中的Blob对象
+
+```javascript
+var droptarget = document.getElementById('droptarget');
+//为拖放的图片文件生成URL产生缩略图
+droptarget.ondrop = function (e) {
+  var files = e.dataTransfer.files;
+  for (var i = 0; i < files.length; i++) {
+    var type = files[i].type;
+    if (type.substring(0,6) !== 'image/')
+      continue;
+    var img = document.createElement('img');
+    img.src = URL.createObjectURL(files[i]);
+    img.onload = function () {
+      this.width = 100;
+      document.body.appendChild(this);
+      URL.revokeObjectURL(this.src);
+    }
+  }
+}
+```
+
+处理BlobURL  若Blob对象不存在，返回404，若跨域，返回403,
+
+且Blob URL只对GET请求有效，若请求成功返回200
+
+## 读取文件
+
+获取Blob对象后，可以通过`FileReader`对象读取Blob对象的内容
+
+`FileReader`提供四个方法处理Blob对象，其参数为Blob对象
+
+- `FileReader.readAsText()`：返回文本，需要指定文本编码，默认为 UTF-8。
+- `FileReader.readAsArrayBuffer()`：返回 ArrayBuffer 对象。
+- `FileReader.readAsDataURL()`：返回 Data URL。
+- `FileReader.readAsBinaryString()`：返回原始的二进制字符串。
+
+```javascript
+// HTML 代码如下
+// <input type=’file' onchange='readfile(this.files[0])'></input>
+// <pre id='output'></pre>
+function readfile(f) {
+  var reader = new FileReader();
+  reader.readAsText(f);
+  reader.onload = function () {
+    var text = reader.result;
+    var out = document.getElementById('output');
+    out.innerHTML = '';
+    out.appendChild(document.createTextNode(text));
+  }
+  reader.onerror = function(e) {
+    console.log('Error', e);
+  };
+}
+```
+
+```javascript
+// HTML 代码如下
+// <input type="file" onchange="typefile(this.files[0])"></input>
+function typefile(file) {
+  // 文件开头的四个字节，生成一个 Blob 对象
+  var slice = file.slice(0, 4);
+  var reader = new FileReader();
+  // 读取这四个字节
+  reader.readAsArrayBuffer(slice);
+  reader.onload = function (e) {
+    var buffer = reader.result;
+    // 将这四个字节的内容，视作一个32位整数
+    var view = new DataView(buffer);
+    var magic = view.getUint32(0, false);
+    // 根据文件的前四个字节，判断它的类型
+    switch(magic) {
+      case 0x89504E47: file.verified_type = 'image/png'; break;
+      case 0x47494638: file.verified_type = 'image/gif'; break;
+      case 0x25504446: file.verified_type = 'application/pdf'; break;
+      case 0x504b0304: file.verified_type = 'application/zip'; break;
+    }
+    console.log(file.name, file.verified_type);
+  };
+};
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
