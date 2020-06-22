@@ -373,9 +373,114 @@ Content-Type: application/x-www-form-urlencoded
 foo=bar&baz=The+first+line.%0D%0AThe+second+line.%0D%0A
 ```
 
+#### text/plain
 
+若表单使用`POST`发送数据，且`enctype`属性为`text/plain`，则数据以纯文本格式发送
 
+```html
+<form
+  action="register.php"
+  method="post"
+  enctype="text/plain"
+  onsubmit="AJAXSubmit(this); return false;"
+>
+</form>
+```
 
+HTTP请求：
+
+```php
+Content-Type: text/plain
+
+foo=bar
+baz=The first line.
+The second line.
+```
+
+#### multipary/form-data
+
+若表单使用`POST`发送数据，且`enctype`属性为`multipart/form-data`，则数据以混合格式发送
+
+```html
+<form
+  action="register.php"
+  method="post"
+  enctype="multipart/form-data"
+  onsubmit="AJAXSubmit(this); return false;"
+>
+</form>
+```
+
+HTTP请求：
+
+```php
+Content-Type: multipart/form-data; boundary=---------------------------314911788813839
+
+-----------------------------314911788813839
+Content-Disposition: form-data; name="foo"
+
+bar
+-----------------------------314911788813839
+Content-Disposition: form-data; name="baz"
+
+The first line.
+The second line.
+
+-----------------------------314911788813839--
+```
+
+## 文件上传
+
+```html
+<input type="file" id="file" name="myFile">
+```
+
+上传文件，需`<form>`的`method`属性设为`POST`，且`enctpye`设为`multipart/form-data`
+
+```html
+<form method="post" enctype="multipart/form-data">
+  <div>
+    <label for="file">选择一个文件</label>
+    <input type="file" id="file" name="myFile" multiple>
+  </div>
+  <div>
+    <input type="submit" id="submit" name="submit_button" value="上传" />
+  </div>
+</form>
+```
+
+```javascript
+//获取文件列表
+var fileSelect = document.getElementById('file');
+var files = fileSelect.files;
+//新建FormData实例对象，模拟发送到服务器的表单数据
+var formData = new FormData();
+for (var i = 0; i < files.length; i++) {
+  var file = files[i];
+  // 只上传图片文件
+  if (!file.type.match('image.*')) {
+    continue;
+  }
+  formData.append('photos[]', file, file.name);
+}
+//使用Ajax上传
+var xhr = new XMLHttpRequest();
+xhr.open('POST', 'handler.php', true);
+xhr.onload = function () {
+  if (xhr.status !== 200) {
+    console.log('An error occurred!');
+  }
+};
+xhr.send(formData);
+
+//或者直接用AJAX发送文件
+var file = document.getElementById('test-input').files[0];
+var xhr = new XMLHttpRequest();
+
+xhr.open('POST', 'myserver/uploads');
+xhr.setRequestHeader('Content-Type', file.type);
+xhr.send(file);
+```
 
 
 

@@ -346,7 +346,7 @@ a // ["a", "b", "c", "d", 1, 2]
 
 ### `map()`
 
-将数组的所有成员依次传入参数函数，然后将每一次执行结果组成一个新数组返回
+将数组的所有成员依次传入参数函数，然后将每一次执行结果==组成一个新数组==返回
 
 ```javascript
 var numbers = [1, 2, 3];
@@ -462,6 +462,50 @@ var myFilter = function (item) {
 
 var arr = [2, 8, 3, 4, 1, 3, 2, 9];
 arr.filter(myFilter, obj) // [8, 4, 9]
+```
+
+### `find()`、`findIndex()`
+
+返回`true`条件的符合find函数的第一个值/索引
+
+### `fill()`
+
+用value重复填充数组
+
+```javascript
+arr.fill(value,start,end);
+```
+
+### `copyWithin()`
+
+```javascript
+arr.copyWithin(target,start,end)
+```
+
+`target`：从该位置开始替换数据
+
+`start`：可选，从该位置开始读取数据，默认为0，若为负值则表示倒数
+
+`end`：可选，到该位置前停止读取数据，默认为数组长度，若为负值则表示倒数
+
+```javascript
+//  将 3 号位复制到 0 号位
+[1, 2, 3, 4, 5].copyWithin(0, 3, 4)
+// [4, 2, 3, 4, 5]
+// -2 相当于 3 号位， -1 相当于 4 号位
+[1, 2, 3, 4, 5].copyWithin(0, -2, -1)
+// [4, 2, 3, 4, 5]
+//  将 3 号位复制到 0 号位
+[].copyWithin.call({length: 5, 3: 1}, 0, 3)
+// {0: 1, 3: 1, length: 5}
+//  将 2 号位到数组结束，复制到 0 号位
+var i32a = new Int32Array([1, 2, 3, 4, 5]);
+i32a.copyWithin(0, 2);
+// Int32Array [3, 4, 5, 4, 5]
+//  对于没有部署 TypedArray 的 copyWithin 方法的平台
+//  需要采用下面的写法
+[].copyWithin.call(new Int32Array([1, 2, 3, 4, 5]), 0, 3, 4);
+// Int32Array [4, 2, 3, 4, 5]
 ```
 
 ### `some()`、`every()`
@@ -602,6 +646,17 @@ a.indexOf('y') // -1
 
 > 因为两个方法内部都是使用`===`进行比较，而`NaN !== NaN`
 
+### `includes()`
+
+用于判断数组是否有`value`，有则返回true，否则返回false
+
+```javascript
+var a [1,2,3];
+a.includes(1);//true
+```
+
+
+
 ### 链式使用
 
 数组方法若返回的是数组，则可以链式使用：
@@ -623,5 +678,18 @@ users
   console.log(email);
 });   //打印地址
 // "tom@example.com"
+```
+
+## Set数据结构
+
+可以保证子项不重复，可以与数组转换
+
+```javascript
+const set = new Set()
+set.add(1)
+set.add(1)
+set.add(1)
+set.size // 1
+const arr = [...set] // arr: [1]
 ```
 
