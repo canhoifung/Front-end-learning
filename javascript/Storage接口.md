@@ -12,7 +12,7 @@
 
 ## 属性和方法
 
-### `Storage.length`
+### Storage.length
 
 返回保存的数据项个数
 
