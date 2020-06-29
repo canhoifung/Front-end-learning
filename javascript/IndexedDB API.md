@@ -641,5 +641,423 @@ IDBObjectStore.count(key)
 
 如果主键或 IDBKeyRange 对象作为参数，则返回对应的记录数量
 
+#### IDBObjectStore.getKey()
+
+用于获取主键
+
+返回IDBRequest对象
+
+```javascript
+objectStore.getKey(key)
+```
+
+参数为主键值或IDBKeyRange对象
+
+#### IDBObjectStore.getAll()
+
+用于获取对象仓库的记录
+
+返回一个IDBRequest对象
+
+```javascript
+// 获取所有记录
+objectStore.getAll()
+
+// 获取所有符合指定主键或 IDBKeyRange 的记录
+objectStore.getAll(query)
+
+// 指定获取记录的数量
+objectStore.getAll(query, count)
+```
+
+#### IDBObjectStore.getAllKeys()
+
+用于获取所有符合条件的主键
+
+返回一个IDBRequest对象
+
+```javascript
+// 获取所有记录的主键
+objectStore.getAllKeys()
+
+// 获取所有符合条件的主键
+objectStore.getAllKeys(query)
+
+// 指定获取主键的数量
+objectStore.getAllKeys(query, count)
+```
+
+#### IDBObjectStore.index()
+
+返回制定名称的索引对象IDBIndex
+
+```javascript
+objectStore.index(name)
+```
+
+```javascript
+//获取索引后续操作
+var t = db.transaction(['people'], 'readonly');
+var store = t.objectStore('people');
+
+var index = store.index('name');
+
+var request = index.get('foo');
+```
+
+#### IDBObjectStore.createIndex()
+
+用于新建当前数据库的一个索引
+
+==只能在VersionChange监听函数内调用==
+
+```javascript
+objectStore.createIndex(indexName, keyPath, objectParameters)
+```
+
+- indexName：索引名
+- keyPath：主键
+- objectParameters：配置对象（可选）
+  - unique：如果设为`true`，将不允许重复的值
+  - multiEntry：如果设为`true`，对于有多个值的主键数组，每个值将在索引里面新建一个条目，否则主键数组对应一个条目
+
+```javascript
+//对象仓库的数据记录
+var person = {
+  name: name,
+  email: email,
+  created: new Date()
+};
+
+var store = db.createObjectStore('people', { autoIncrement: true });
+
+store.createIndex('name', 'name', { unique: false });
+store.createIndex('email', 'email', { unique: true });
+```
+
+#### IDBObjectStore.deleteIndex()
+
+用于删除指定的索引
+
+==只能在VersionChange监听函数内调用==
+
+```javascript
+objectStore.deleteIndex(indexName)
+```
+
+#### IDBObjectStore.openCursor()
+
+用于获取一个指针对象
+
+```javascript
+IDBObjectStore.openCursor()
+```
+
+可以用于遍历数据，异步操作，有`success`和`error`事件
+
+```javascript
+var t = db.transaction(['test'], 'readonly');
+var store = t.objectStore('test');
+
+var cursor = store.openCursor();
+
+cursor.onsuccess = function (event) {
+  //event.target.result指向当前数据记录
+  var res = event.target.result;
+  if (res) {
+    //key和value分别返回主键和键值
+    console.log('Key', res.key);
+    console.dir('Data', res.value);
+    //continue将光标移至下一个数据对象，若为最后一个则指向null
+    res.continue();
+  }
+}
+```
+
+参数为主键值或IDBKeyRange对象
+
+若指定了参数，将只处理包含指定主键的记录；
+
+若省略，将处理所有记录
+
+第二参数表示遍历方向，默认为`next`，还可能有`prev`、`nextunique`、`prevunique`，后两个会跳过重复值
+
+#### IDBObjectStore.openKeyCursor()
+
+用于获取一个主键指针对象
+
+```javascript
+IDBObjectStore.openKeyCursor()
+```
+
+## IDBTransaction对象
+
+用于异步操作数据库事务，所有读写操作都通过这个对象进行
+
+`IDBDatabase.transaction()`返回一个IDBTransaction对象
+
+```javascript
+var db;
+var DBOpenRequest = window.indexedDB.open('demo', 1);
+
+DBOpenRequest.onsuccess = function(event) {
+  db = DBOpenRequest.result;
+  var transaction = db.transaction(['demo'], 'readwrite');
+
+  transaction.oncomplete = function (event) {
+    console.log('transaction success');
+  };
+
+  transaction.onerror = function (event) {
+    console.log('transaction error: ' + transaction.error);
+  };
+
+  var objectStore = transaction.objectStore('demo');
+  var objectStoreRequest = objectStore.add({ foo: 1 });
+
+  objectStoreRequest.onsuccess = function (event) {
+    console.log('add data success');
+  };
+
+};
+```
+
+事务执行顺序是创建的顺序，不是发出请求的顺序
+
+```javascript
+var trans1 = db.transaction('foo', 'readwrite');
+var trans2 = db.transaction('foo', 'readwrite');
+var objectStore2 = trans2.objectStore('foo')
+var objectStore1 = trans1.objectStore('foo')
+objectStore2.put('2', 'key');
+objectStore1.put('1', 'key');
+//key的键值是2而不是1
+```
+
+属性：
+
+- `IDBTransaction.db`：返回当前事务所在的数据库对象 IDBDatabase。
+- `IDBTransaction.error`：返回当前事务的错误。如果事务没有结束，或者事务成功结束，或者被手动终止，该方法返回`null`。
+- `IDBTransaction.mode`：返回当前事务的模式，默认是`readonly`（只读），另一个值是`readwrite`。
+- `IDBTransaction.objectStoreNames`：返回一个类似数组的对象 DOMStringList，成员是当前事务涉及的对象仓库的名字。
+- `IDBTransaction.onabort`：指定`abort`事件（事务中断）的监听函数。
+- `IDBTransaction.oncomplete`：指定`complete`事件（事务成功）的监听函数。
+- `IDBTransaction.onerror`：指定`error`事件（事务失败）的监听函数。
+
+方法：
+
+- `IDBTransaction.abort()`：终止当前事务，回滚所有已经进行的变更。
+- `IDBTransaction.objectStore(name)`：返回指定名称的对象仓库 IDBObjectStore
+
+## IDBIndex对象
+
+代表数据库的索引，通过对象可以获取数据库里面的记录
+
+主要用于通过除主键以外的其他键，建立索引获取对象
+
+是持久性的键值对存储，只要插入、更新或删除数据记录，引用的对象库中的记录，索引就会自动更新
+
+`IDBObjectStore.index()`可以获取IDBIndex对象
+
+```javascript
+var transaction = db.transaction(['contactsList'], 'readonly');
+var objectStore = transaction.objectStore('contactsList');
+var myIndex = objectStore.index('lName');
+
+myIndex.openCursor().onsuccess = function (event) {
+  var cursor = event.target.result;
+  if (cursor) {
+    var tableRow = document.createElement('tr');
+    tableRow.innerHTML =   '<td>' + cursor.value.id + '</td>'
+                         + '<td>' + cursor.value.lName + '</td>'
+                         + '<td>' + cursor.value.fName + '</td>'
+                         + '<td>' + cursor.value.jTitle + '</td>'
+                         + '<td>' + cursor.value.company + '</td>'
+                         + '<td>' + cursor.value.eMail + '</td>'
+                         + '<td>' + cursor.value.phone + '</td>'
+                         + '<td>' + cursor.value.age + '</td>';
+    tableEntry.appendChild(tableRow);
+
+    cursor.continue();
+  } else {
+    console.log('Entries all displayed.');
+  }
+};
+```
+
+属性：
+
+- `IDBIndex.name`：字符串，索引的名称。
+- `IDBIndex.objectStore`：索引所在的对象仓库。
+- `IDBIndex.keyPath`：索引的主键。
+- `IDBIndex.multiEntry`：布尔值，针对`keyPath`为数组的情况，如果设为`true`，创建数组时，每个数组成员都会有一个条目，否则每个数组都只有一个条目。
+- `IDBIndex.unique`：布尔值，表示创建索引时是否允许相同的主键。
+
+方法：立即返回的都是一个 IDBRequest 对象。
+
+- `IDBIndex.count()`：用来获取记录的数量。它可以接受主键或 IDBKeyRange 对象作为参数，这时只返回符合主键的记录数量，否则返回所有记录的数量。
+- `IDBIndex.get(key)`：用来获取符合指定主键的数据记录。
+- `IDBIndex.getKey(key)`：用来获取指定的主键。
+- `IDBIndex.getAll()`：用来获取所有的数据记录。它可以接受两个参数，都是可选的，第一个参数用来指定主键，第二个参数用来指定返回记录的数量。如果省略这两个参数，则返回所有记录。由于获取成功时，浏览器必须生成所有对象，所以对性能有影响。如果数据集比较大，建议使用 IDBCursor 对象。
+- `IDBIndex.getAllKeys()`：该方法与`IDBIndex.getAll()`方法相似，区别是获取所有主键。
+- `IDBIndex.openCursor()`：用来获取一个 IDBCursor 对象，用来遍历索引里面的所有条目。
+- `IDBIndex.openKeyCursor()`：该方法与`IDBIndex.openCursor()`方法相似，区别是遍历所有条目的主键。
+
+## IDBCursor对象
+
+代表指针对象，用于遍历数据仓库或索引的记录
+
+一般通过`IDBObjectStore.openCursor()`方法获得
+
+```javascript
+var transaction = db.transaction(['rushAlbumList'], 'readonly');
+var objectStore = transaction.objectStore('rushAlbumList');
+
+objectStore.openCursor(null, 'next').onsuccess = function(event) {
+  var cursor = event.target.result;
+  if (cursor) {
+    var listItem = document.createElement('li');
+      listItem.innerHTML = cursor.value.albumTitle + ', ' + cursor.value.year;
+      list.appendChild(listItem);
+
+      console.log(cursor.source);
+      cursor.continue();
+    } else {
+      console.log('Entries all displayed.');
+    }
+  };
+};
+```
+
+属性：
+
+- `IDBCursor.source`：返回正在遍历的对象仓库或索引。
+- `IDBCursor.direction`：字符串，表示指针遍历的方向。共有四个可能的值：next（从头开始向后遍历）、nextunique（从头开始向后遍历，重复的值只遍历一次）、prev（从尾部开始向前遍历）、prevunique（从尾部开始向前遍历，重复的值只遍历一次）。该属性通过`IDBObjectStore.openCursor()`方法的第二个参数指定，一旦指定就不能改变了。
+- `IDBCursor.key`：返回当前记录的主键。
+- `IDBCursor.value`：返回当前记录的数据值。
+- `IDBCursor.primaryKey`：返回当前记录的主键。对于数据仓库（objectStore）来说，这个属性等同于 IDBCursor.key；对于索引，IDBCursor.key 返回索引的位置值，该属性返回数据记录的主键。
+
+方法：
+
+- `IDBCursor.advance(n)`：指针向前移动 n 个位置。
+- `IDBCursor.continue()`：指针向前移动一个位置。它可以接受一个主键作为参数，这时会跳转到这个主键。
+- `IDBCursor.continuePrimaryKey()`：该方法需要两个参数，第一个是`key`，第二个是`primaryKey`，将指针移到符合这两个参数的位置。
+- `IDBCursor.delete()`：用来删除当前位置的记录，返回一个 IDBRequest 对象。该方法不会改变指针的位置。
+- `IDBCursor.update()`：用来更新当前位置的记录，返回一个 IDBRequest 对象。它的参数是要写入数据库的新的值。
+
+## IDBKeyRange对象
+
+代表数据仓库里面的一组主键，根据主键可以获取数据仓库或索引里面的一组记录
+
+可以只包含一个值，也可以指定上下限
+
+方法：(前三个方法默认包括端点值，可以添加第二个布尔参数修改这个属性)
+
+- `IDBKeyRange.lowerBound()`：指定下限。
+- `IDBKeyRange.upperBound()`：指定上限。
+- `IDBKeyRange.bound()`：同时指定上下限。
+- `IDBKeyRange.only()`：指定只包含一个值。
+
+```javascript
+// All keys ≤ x
+var r1 = IDBKeyRange.upperBound(x);
+
+// All keys < x
+var r2 = IDBKeyRange.upperBound(x, true);
+
+// All keys ≥ y
+var r3 = IDBKeyRange.lowerBound(y);
+
+// All keys > y
+var r4 = IDBKeyRange.lowerBound(y, true);
+
+// All keys ≥ x && ≤ y
+var r5 = IDBKeyRange.bound(x, y);
+
+// All keys > x &&< y
+var r6 = IDBKeyRange.bound(x, y, true, true);
+
+// All keys > x && ≤ y
+var r7 = IDBKeyRange.bound(x, y, true, false);
+
+// All keys ≥ x &&< y
+var r8 = IDBKeyRange.bound(x, y, false, true);
+
+// The key = z
+var r9 = IDBKeyRange.only(z);
+```
+
+属性：
+
+- `IDBKeyRange.lower`：返回下限
+- `IDBKeyRange.lowerOpen`：布尔值，表示下限是否为开区间（即下限是否排除在范围之外）
+- `IDBKeyRange.upper`：返回上限
+- `IDBKeyRange.upperOpen`：布尔值，表示上限是否为开区间（即上限是否排除在范围之外）
+
+```javascript
+var t = db.transaction(['people'], 'readonly');
+var store = t.objectStore('people');
+var index = store.index('name');
+
+var range = IDBKeyRange.bound('B', 'D');
+
+index.openCursor(range).onsuccess = function (e) {
+  var cursor = e.target.result;
+  if (cursor) {
+    console.log(cursor.key + ':');
+
+    for (var field in cursor.value) {
+      console.log(cursor.value[field]);
+    }
+    cursor.continue();
+  }
+}
+```
+
+实例方法：
+
++ `includes(key)`：返回一个布尔值，表示某个主键是否包含在当前主键组内
+
+```javascript
+var keyRangeValue = IDBKeyRange.bound('A', 'K', false, false);
+
+keyRangeValue.includes('F') // true
+keyRangeValue.includes('W') // false
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
