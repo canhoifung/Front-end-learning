@@ -182,11 +182,197 @@ self.onmessage = function (e) {
 };
 ```
 
+拷贝方式发送二进制数据，会造成性能问题
 
+比如，主线程向 Worker 发送一个 500MB 文件，默认情况下浏览器会生成一个原文件的拷贝。为了解决这个问题，JavaScript 允许主线程把二进制数据直接转移给子线程，但是一旦转移，主线程就无法再使用这些二进制数据了，这是为了防止出现多个线程同时修改数据的麻烦局面。这种转移数据的方法，叫做[Transferable Objects](https://www.w3.org/html/wg/drafts/html/master/infrastructure.html#transferable-objects)。这使得主线程可以快速把数据交给 Worker，对于影像处理、声音处理、3D 运算等就非常方便了，不会产生性能负担。
 
+如果要直接转移数据的控制权，就要使用下面的写法
 
+```javascript
+// Transferable Objects 格式
+worker.postMessage(arrayBuffer, [arrayBuffer]);
 
+// 例子
+var ab = new ArrayBuffer(1);
+worker.postMessage(ab, [ab]);
+```
 
+## 同页面的Web Worker
+
+Worker可以载入单独JavaScript脚本文件，也可以载入与主线程在同一个页面的代码
+
+```html
+<!DOCTYPE html>
+  <body>
+      <!--必须指定script的type为浏览器不认识的值-->
+    <script id="worker" type="app/worker">
+      addEventListener('message', function () {
+        postMessage('some message');
+      }, false);
+    </script>
+  </body>
+</html>
+```
+
+```javascript
+var blob = new Blob([document.querySelector('#worker').textContent]);
+var url = window.URL.createObjectURL(blob);
+var worker = new Worker(url);
+
+worker.onmessage = function (e) {
+  // e.data === 'some message'
+};
+```
+
+## 实例：Worker线程完成轮询
+
+用于轮询服务器状态以便第一时间得知状态改变
+
+```javascript
+function createWorker(f) {
+  var blob = new Blob(['(' + f.toString() + ')()']);
+  var url = window.URL.createObjectURL(blob);
+  var worker = new Worker(url);
+  return worker;
+}
+
+var pollingWorker = createWorker(function (e) {
+  var cache;
+
+  function compare(new, old) { ... };
+
+  setInterval(function () {
+    fetch('/my-api-endpoint').then(function (res) {
+      var data = res.json();
+
+      if (!compare(data, cache)) {
+        cache = data;
+        self.postMessage(data);
+      }
+    })
+  }, 1000)
+});
+
+pollingWorker.onmessage = function () {
+  // render data
+}
+
+pollingWorker.postMessage('init');
+```
+
+每秒钟轮询一次数据，与缓存做比较，如果不一致就说明服务端有新变化要通知主线程
+
+## 实例：Worker新建Worker
+
+Worker线程内部新建Worker线程
+
+==目前只有Firefox支持==
+
+```javascript
+//主线程
+var worker = new Worker('worker.js');
+worker.onmessage = function (event) {
+  document.getElementById('result').textContent = event.data;
+};
+```
+
+```javascript
+//Worker线程
+// worker.js
+
+// settings
+var num_workers = 10;
+var items_per_worker = 1000000;
+
+// start the workers
+var result = 0;
+var pending_workers = num_workers;
+for (var i = 0; i < num_workers; i += 1) {
+  var worker = new Worker('core.js');
+  worker.postMessage(i * items_per_worker);
+  worker.postMessage((i + 1) * items_per_worker);
+  worker.onmessage = storeResult;
+}
+
+// handle the results
+function storeResult(event) {
+  result += event.data;
+  pending_workers -= 1;
+  if (pending_workers <= 0)
+    postMessage(result); // finished!
+}
+```
+
+```javascript
+//计算任务
+// core.js
+var start;
+onmessage = getStart;
+function getStart(event) {
+  start = event.data;
+  onmessage = getEnd;
+}
+
+var end;
+function getEnd(event) {
+  end = event.data;
+  onmessage = null;
+  work();
+}
+
+function work() {
+  var result = 0;
+  for (var i = start; i < end; i += 1) {
+    // perform some complex calculation here
+    result += 1;
+  }
+  postMessage(result);
+  close();
+}
+```
+
+Worker 线程内部新建了10个 Worker 线程，并且依次向这10个 Worker 发送消息，告知了计算的起点和终点
+
+## API
+
+### 主线程
+
+原生提供了`Worker()`构造函数，用于生成Worker线程
+
+```javascript
+var myWorker = new Worker(jsUrl,options);
+```
+
++ 脚本网址，必须遵循同源政策
+
++ 配置对象，可选，可以用于指定Worker的名称
+
+  ```javascript
+  // 主线程
+  var myWorker = new Worker('worker.js', { name : 'myWorker' });
+  
+  // Worker 线程
+  self.name // myWorker
+  ```
+
+构造函数返回一个Worker线程对象，属性和方法如下：
+
+- Worker.onerror：指定 error 事件的监听函数。
+- Worker.onmessage：指定 message 事件的监听函数，发送过来的数据在`Event.data`属性中。
+- Worker.onmessageerror：指定 messageerror 事件的监听函数。发送的数据无法序列化成字符串时，会触发这个事件。
+- Worker.postMessage()：向 Worker 线程发送消息。
+- Worker.terminate()：立即终止 Worker 线程。
+
+### Worker线程
+
+专属的全局属性和方法：
+
+- self.name： Worker 的名字。该属性只读，由构造函数指定。
+- self.onmessage：指定`message`事件的监听函数。
+- self.onmessageerror：指定 messageerror 事件的监听函数。发送的数据无法序列化成字符串时，会触发这个事件。
+- self.close()：关闭 Worker 线程。
+- self.postMessage()：向产生这个 Worker 线程发送消息。
+- self.importScripts()：加载 JS 脚本。
 
 
 
