@@ -1,8 +1,15 @@
-# let const
+# let，const
 
-**let 定义的变量不会被变量提升，const 定义的常量不能被修改，let 和 const 都是块级作用域**  
-**提供了块级作用域与不再具备变量提升**  
+let 定义的变量不会被变量提升，const 定义的常量不能被修改，let 和 const 都是块级作用域
+
+提供了块级作用域
+
+不再具备变量提升
+
 ## let
+
+1. 块级作用域
+
 ```JavaScript
 {
     let _a = 20;
@@ -18,7 +25,48 @@ console.log(a); // a is not defined
 let a = 20;
 ```
 
+2. 不能重复声明
+
+```javascript
+let a = 1;
+var a = 3;//Identifier 'a' has already been declared
+
+var b = 1;
+let b = 3;//Identifier 'b' has already been declared
+
+let c = 1;
+let c = 2; //Identifier 'c' has already been declared
+```
+
+3. 暂时性死区
+
+```javascript
+var tmp = 123;
+if(true){
+    tmp = 'abc'; //ReferenceError
+    let tmp;
+};
+
+
+let x=x;//ReferenceError
+
+function bar(x = y, y = 2) {
+  return [x, y];
+}
+bar(); // 报错
+
+function bar1(x = 2, y = x) {
+  return [x, y];
+}
+bar1(); // [2, 2]
+```
+
+`let`命令绑定块级作用域 ，在作用域内`let`声明前都是声明变量的死区，只要用到变量就会报错
+
+4. 避免在块级作用域内声明函数，如果需要也要写成函数表达式而不是函数声明
+
 ## const
+
 **const定义的变量不可以被修改,而且必须初始化**  
 **const定义的基础数据类型不能被修改,但是当定义的是对象,则只保存指向堆内存的指标**
 
@@ -168,6 +216,7 @@ var string = a + "+" + b + "=" + (a + b);
 使用 `` 将整个字符串包裹起来，而在其中使用 ${} 来包裹一个变量或者一个表达式。
 
 # 解析结构
+
 ```JavaScript
 // 首先有这么一个对象
 const props = {
