@@ -128,6 +128,8 @@ const e=[];  //对数组可执行的操作都可以,但是不能赋值为另外�
 const foo = Object.freeze({});
 ```
 
+
+
 # 解构赋值
 
 ## 数组的解构赋值
@@ -630,9 +632,711 @@ for (let i of text) {
 
 ## 模版字符串
 
+```javascript
+//jQuery方法
+$('#result').append(
+  'There are <b>' + basket.count + '</b> ' +
+  'items in your basket, ' +
+  '<em>' + basket.onSale +
+  '</em> are on sale!'
+);
+//-->
+$('#result').append(`
+  There are <b>${basket.count}</b> items
+   in your basket, <em>${basket.onSale}</em>
+  are on sale!
+`);
+```
+
+模版字符串用反引号==`==标识，可以用于普通字符串、定义多行字符串、或者字符串中嵌入变量
+
+```javascript
+// 普通字符串
+`In JavaScript '\n' is a line-feed.`
+
+// 多行字符串
+`In JavaScript this is
+ not legal.`
+
+console.log(`string text line 1
+string text line 2`);
+
+// 字符串中嵌入变量
+let name = "Bob", time = "today";
+`Hello ${name}, how are you ${time}?`
+```
+
+如果模版字符串里面要用到反引号，就需要使用反斜杠转义
+
+```javascript
+let greeting = `\`Yo\` World!`;
+```
+
+模版字符串的变量需要写在`${}`中，且大括号里面可以写任意JavaScript表达式，包括函数
+
+```javascript
+let x = 1;
+let y = 2;
+
+`${x} + ${y} = ${x + y}`
+// "1 + 2 = 3"
+
+`${x} + ${y * 2} = ${x + y * 2}`
+// "1 + 4 = 5"
+
+let obj = {x: 1, y: 2};
+`${obj.x + obj.y}`
+// "3"
+
+function fn() {
+  return "Hello World";
+}
+`foo ${fn()} bar`
+// foo Hello World bar
+```
+
+若变量没有声明将报错
+
+可以嵌套：
+
+```javascript
+const tmpl = addrs => `
+  <table>
+  ${addrs.map(addr => `
+    <tr><td>${addr.first}</td></tr>
+    <tr><td>${addr.last}</td></tr>
+  `).join('')}
+  </table>
+`;
+const data = [
+    { first: '<Jane>', last: 'Bond' },
+    { first: 'Lars', last: '<Croft>' },
+];
+console.log(tmpl(data));
+// <table>
+//
+//   <tr><td><Jane></td></tr>
+//   <tr><td>Bond</td></tr>
+//
+//   <tr><td>Lars</td></tr>
+//   <tr><td><Croft></td></tr>
+//
+// </table>
+```
+
+## 实例模版编译
+
+常规模版：使用`<%...%>`放置JavaScript代码，使用`<%=...%>`输出JavaScript表达式
+
+```javascript
+let template = `
+<ul>
+  <% for(let i=0; i < data.supplies.length; i++) { %>
+    <li><%= data.supplies[i] %></li>
+  <% } %>
+</ul>
+`;
+```
+
+将其转为JavaScript表达式字符串：
+
+```javascript
+echo('<ul>');
+for(let i=0; i < data.supplies.length; i++) {
+  echo('<li>');
+  echo(data.supplies[i]);
+  echo('</li>');
+};
+echo('</ul>');
+```
+
+使用正则表达式转换：
+
+```javascript
+let evalExpr = /<%=(.+?)%>/g;
+let expr = /<%([\s\S]+?)%>/g;
+
+template = template
+  .replace(evalExpr, '`); \n  echo( $1 ); \n  echo(`')
+  .replace(expr, '`); \n $1 \n  echo(`');
+
+template = 'echo(`' + template + '`);';
+```
+
+将`template`封装在函数内：
+
+```javascript
+let script =
+`(function parse(data){
+  let output = "";
+
+  function echo(html){
+    output += html;
+  }
+
+  ${ template }
+
+  return output;
+})`;
+
+return script;
+```
+
+完整函数：
+
+```javascript
+function compile(template){
+  const evalExpr = /<%=(.+?)%>/g;
+  const expr = /<%([\s\S]+?)%>/g;
+
+  template = template
+    .replace(evalExpr, '`); \n  echo( $1 ); \n  echo(`')
+    .replace(expr, '`); \n $1 \n  echo(`');
+
+  template = 'echo(`' + template + '`);';
+
+  let script =
+  `(function parse(data){
+    let output = "";
+
+    function echo(html){
+      output += html;
+    }
+
+    ${ template }
+
+    return output;
+  })`;
+
+  return script;
+}
+```
+
+## 标签模版
+
+模版字符串紧跟在函数名后，可以作为参数调用函数
+
+```javascript
+alert`hello`
+// 等同于
+alert(['hello'])
+```
+
+若模版字符里面有变量，会先将模版字符串处理为多个参数，再调用函数
+
+```javascript
+let a = 5;
+let b = 10;
+
+tag`Hello ${ a + b } world ${ a * b }`;
+// 等同于
+tag(['Hello ', ' world ', ''], 15, 50);
+
+function tag(stringArr, value1, value2){
+  // ...
+}
+// 等同于
+function tag(stringArr, ...values){
+  // ...
+}
+```
+
+stringArr为一个数组，表示模版字符串中没有变量替换的部分，变量替换发生再数组的成员之间，因此这里最后会有一个`‘'`
+
+其他参数为模版字符串中的变量
+
+==可以用于过滤HTML字符串==
+
+```javascript
+let message =
+  SaferHTML`<p>${sender} has sent you a message.</p>`;
+
+function SaferHTML(templateData) {
+  let s = templateData[0];
+  for (let i = 1; i < arguments.length; i++) {
+    let arg = String(arguments[i]);
+
+    // Escape special characters in the substitution.
+    s += arg.replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+
+    // Don't escape special characters in the template.
+    s += templateData[i];
+  }
+  return s;
+}
+
+let sender = '<script>alert("abc")</script>'; // 恶意代码
+let message = SaferHTML`<p>${sender} has sent you a message.</p>`;
+message
+// <p>&lt;script&gt;alert("abc")&lt;/script&gt; has sent you a message.</p>
+```
+
+## 模版字符串限制
+
+默认将字符串转义
+
+如果遇到不合法的字符串
+
+标签模版解析字符串时转义会返回`undefined`
+
+标签模版的场合就会报错
+
+```javascript
+function tag(strs) {
+  strs[0] === undefined
+  strs.raw[0] === "\\unicode and \\u{55}";
+}
+tag`\unicode and \u{55}`
+
+let bad = `bad escape sequence: \unicode`; // 报错
+```
 
 
 
+
+
+# 字符串新增方法
+
+## String.fromCodePoint()
+
+从Unicode码点返回对应字符
+
+能识别码点大于`0xFFFF`的字符
+
+```javascript
+String.fromCharCode(0x20BB7)
+// "ஷ"
+//最高位2被舍弃，返回码点U+0BB7对应字符
+
+String.fromCodePoint(0x20BB7)
+// "𠮷"
+String.fromCodePoint(0x78, 0x1f680, 0x79) === 'x\uD83D\uDE80y'
+// true
+//多个参数会合并成一个字符串返回
+```
+
+## String.raw()
+
+返回一个斜杠被转义的字符串，用于模版字符串的处理方法
+
+```javascript
+String.raw`Hi\n${2+3}!`
+// 实际返回 "Hi\\n5!"，显示的是转义后的结果 "Hi\n5!"
+
+String.raw`Hi\u000A!`;
+// 实际返回 "Hi\\u000A!"，显示的是转义后的结果 "Hi\u000A!"
+```
+
+```javascript
+String.raw`Hi\\n`
+// 返回 "Hi\\\\n"
+
+String.raw`Hi\\n` === "Hi\\\\n" // true
+```
+
+```javascript
+// `foo${1 + 2}bar`
+// 等同于
+String.raw({ raw: ['foo', 'bar'] }, 1 + 2) // "foo3bar"
+```
+
+实现代码：
+
+```javascript
+String.raw = function (strings, ...values) {
+  let output = '';
+  let index;
+  for (index = 0; index < values.length; index++) {
+    output += strings.raw[index] + values[index];
+  }
+
+  output += strings.raw[index]
+  return output;
+}
+```
+
+## 实例方法：codePointAt()
+
+能正常处理4个字节存储的字符，并返回一个字符的码点
+
+```javascript
+var s = "𠮷";
+s.length // 2
+s.charAt(0) // ''
+s.charAt(1) // ''
+s.charCodeAt(0) // 55362
+s.charCodeAt(1) // 57271
+
+let s1 = '𠮷a';
+//会将上面的看作三个字符
+s1.codePointAt(0) // 134071
+s1.codePointAt(1) // 57271
+s1.codePointAt(2) // 97
+```
+
+```javascript
+//测试一个字符是由四个字节还是两个字节组成
+function is32Bit(c) {
+  return c.codePointAt(0) > 0xFFFF;
+}
+
+is32Bit("𠮷") // true
+is32Bit("a") // false
+```
+
+## 实例方法：normalize()
+
+用于将字符的不同表示方法统一为同样的形式，即Unicode正规化
+
+```javascript
+'\u01D1'.normalize() === '\u004F\u030C'.normalize()
+// true
+```
+
+接收一个参数指定`normalize()`的方式：
+
+- `NFC`，默认参数，表示“标准等价合成”（Normalization Form Canonical Composition），返回多个简单字符的合成字符。所谓“标准等价”指的是视觉和语义上的等价。
+- `NFD`，表示“标准等价分解”（Normalization Form Canonical Decomposition），即在标准等价的前提下，返回合成字符分解的多个简单字符。
+- `NFKC`，表示“兼容等价合成”（Normalization Form Compatibility Composition），返回合成字符。所谓“兼容等价”指的是语义上存在等价，但视觉上不等价，比如“囍”和“喜喜”。（这只是用来举例，`normalize`方法不能识别中文。）
+- `NFKD`，表示“兼容等价分解”（Normalization Form Compatibility Decomposition），即在兼容等价的前提下，返回合成字符分解的多个简单字符。
+
+## 实例方法：includes()，startsWith()，endsWith()
+
+- **includes()**：返回布尔值，表示是否找到了参数字符串。
+- **startsWith()**：返回布尔值，表示参数字符串是否在原字符串的头部。
+- **endsWith()**：返回布尔值，表示参数字符串是否在原字符串的尾部。
+
+```javascript
+let s = 'Hello world!';
+s.startsWith('Hello') // true
+s.endsWith('!') // true
+s.includes('o') // true
+
+s.startsWith('world', 6) // true    从第N个到字符串结束
+s.endsWith('Hello', 5) // true   针对前N个字符
+s.includes('Hello', 6) // false   从第N个到字符串结束
+```
+
+都支持第二个参数，表示要搜索的位置
+
+## 实例方法：repeat()
+
+返回一个新字符串，表示将原字符串重复`n`次
+
+```javascript
+'x'.repeat(3) // "xxx"
+'hello'.repeat(2) // "hellohello"
+'na'.repeat(0) // ""
+//小数取整
+'na'.repeat(2.9) // "nana"
+//负数或Infinity报错
+'na'.repeat(Infinity) // RangeError
+'na'.repeat(-1)  // RangeError
+//NaN等同0
+'na'.repeat(NaN) // ""
+//字符串先转为数字
+'na'.repeat('na') // ""
+'na'.repeat('3') // "nanana"
+```
+
+## 实例方法：padStart()，padEnd()
+
+补全字符串长度
+
+```javascript
+'x'.padStart(5, 'ab') // 'ababx'
+'x'.padStart(4, 'ab') // 'abax'
+
+'x'.padEnd(5, 'ab') // 'xabab'
+'x'.padEnd(4, 'ab') // 'xaba'
+
+'abc'.padStart(10, '0123456789')
+// '0123456abc'
+
+'x'.padStart(4) // '   x'
+'x'.padEnd(4) // 'x   '
+```
+
+如果原字符串长度大于等于最大长度，则返回原字符串
+
+补全字符串和原字符串长度之和大于最大长度，就截去超出位数的补全字符串
+
+省略第二个参数就默认用空格补全长度
+
+==可以用作提示字符串格式==
+
+```javascript
+'12'.padStart(10, 'YYYY-MM-DD') // "YYYY-MM-12"
+'09-12'.padStart(10, 'YYYY-MM-DD') // "YYYY-09-12"
+```
+
+## 实例方法：trimStart()，trimEnd()
+
+不会修改原字符串
+
+```javascript
+const s = '  abc  ';
+
+s.trim() // "abc"
+s.trimStart() // "abc  "
+s.trimEnd() // "  abc"
+```
+
+## 实例方法：matchAll()
+
+返回正则表达式在当前字符串的所有匹配
+
+
+
+# 正则的扩展
+
+## 构造函数改动
+
+```javascript
+new RegExp(/abc/ig, 'i').flags
+// "i"
+```
+
+如果第一个参数为正则对象，第二个参数可以指定修饰符，若指定了就会忽略正则对象原有的修饰符
+
+## 字符串正则方法
+
+ES6 将这 4 个方法，在语言内部全部调用`RegExp`的实例方法，从而做到所有与正则相关的方法，全都定义在`RegExp`对象上。
+
+- `String.prototype.match` 调用 `RegExp.prototype[Symbol.match]`
+- `String.prototype.replace` 调用 `RegExp.prototype[Symbol.replace]`
+- `String.prototype.search` 调用 `RegExp.prototype[Symbol.search]`
+- `String.prototype.split` 调用 `RegExp.prototype[Symbol.split]`
+
+## u修饰符
+
+含义为Unicode模式，用于正确处理大于`\uFFFF`的Unicode字符
+
+```javascript
+/^\uD83D/u.test('\uD83D\uDC2A') // false
+/^\uD83D/.test('\uD83D\uDC2A') // true
+```
+
+### 点字符
+
+添加`u`修饰符后可以匹配大于`\uFFFF`的Unicode字符
+
+```javascript
+var s = '𠮷';
+
+/^.$/.test(s) // false
+/^.$/u.test(s) // true
+```
+
+### Unicode字符表示法
+
+```javascript
+/\u{61}/.test('a') // false
+/\u{61}/u.test('a') // true
+/\u{20BB7}/u.test('𠮷') // true
+```
+
+使用大括号表示Unicode字符必须使用`u`修饰符，否则被解读为量词
+
+### 量词
+
+使用`u`修饰符后，所有两次都会正确识别大于`\uFFFF`的Unicode字符
+
+```javascript
+/a{2}/.test('aa') // true
+/a{2}/u.test('aa') // true
+/𠮷{2}/.test('𠮷𠮷') // false
+/𠮷{2}/u.test('𠮷𠮷') // true
+```
+
+### 预定义模式
+
+```javascript
+/^\S$/.test('𠮷') // false
+/^\S$/u.test('𠮷') // true
+```
+
+正确匹配字符串长度：
+
+```javascript
+function codePointLength(text) {
+  var result = text.match(/[\s\S]/gu);
+  return result ? result.length : 0;
+}
+
+var s = '𠮷𠮷';
+
+s.length // 4
+codePointLength(s) // 2
+```
+
+### i修饰符
+
+有些 Unicode 字符的编码不同，但是字型很相近，比如，`\u004B`与`\u212A`都是大写的`K`。
+
+```JavaScript
+/[a-z]/i.test('\u212A') // false
+/[a-z]/iu.test('\u212A') // true
+```
+
+上面代码中，不加`u`修饰符，就无法识别非规范的`K`字符
+
+### 转义
+
+没有`u`修饰符的情况下，正则中没有定义的转义（如逗号的转义`\,`）无效，而在`u`模式会报错。
+
+```javascript
+/\,/ // /\,/
+/\,/u // 报错
+```
+
+上面代码中，没有`u`修饰符时，逗号前面的反斜杠是无效的，加了`u`修饰符就报错。
+
+## RegExp.prototype.unicode属性
+
+表示是否设置了`u`修饰符
+
+```javascript
+const r1 = /hello/;
+const r2 = /hello/u;
+
+r1.unicode // false
+r2.unicode // true
+```
+
+## y修饰符
+
+粘连修饰符，与`g`类似都是全局匹配，但是匹配必须从剩余的第一个位置开始
+
+```javascript
+var s = 'aaa_aa_a';
+var r1 = /a+/g;
+var r2 = /a+/y;
+
+r1.exec(s) // ["aaa"]
+r2.exec(s) // ["aaa"]
+
+r1.exec(s) // ["aa"]
+r2.exec(s) // null
+```
+
+单一`y`对`match`方法只能返回第一个匹配，需要和`g`修饰符联用
+
+```javascript
+'a1a2a3'.match(/a\d/y) // ["a1"]
+'a1a2a3'.match(/a\d/gy) // ["a1", "a2", "a3"]
+```
+
+
+
+# 数值的拓展
+
+## Number.isFinite()，Number.isNan()
+
+检查一个数值是否为有限的（finite）
+
+```javascript
+Number.isFinite(15); // true
+Number.isFinite(0.8); // true
+Number.isFinite(NaN); // false
+Number.isFinite(Infinity); // false
+Number.isFinite(-Infinity); // false
+Number.isFinite('foo'); // false
+Number.isFinite('15'); // false
+Number.isFinite(true); // false
+```
+
+只要不是数值类型一律返回`false`
+
+```javascript
+Number.isNaN(NaN) // true
+Number.isNaN(15) // false
+Number.isNaN('15') // false
+Number.isNaN(true) // false
+Number.isNaN(9/NaN) // true
+Number.isNaN('true' / 0) // true
+Number.isNaN('true' / 'true') // true
+```
+
+
+
+这两个方法只对数值有效，传统的全局方法`isFinite()`和`isNaN()`需要先调用`Number()`将非数值转为数值再判断
+
+## Number.parseInt(), Number.parseFloat()
+
+将全局方法移植到`Number`上，行为一致
+
+可以减少全局性方法
+
+## Number.isInteger()
+
+判断一个数值是否为整数
+
+数值精度最多53个二进制位
+
+## Number.EPSILON
+
+表示1与大于1的最小浮点数之间的差
+
+```javascript
+Number.EPSILON === Math.pow(2, -52)
+// true
+Number.EPSILON
+// 2.220446049250313e-16
+Number.EPSILON.toFixed(20)
+// "0.00000000000000022204"
+```
+
+可以用于表示可以接受的误差范围
+
+```javascript
+function withinErrorMargin (left, right) {
+  return Math.abs(left - right) < Number.EPSILON * Math.pow(2, 2);
+}
+
+0.1 + 0.2 === 0.3 // false
+withinErrorMargin(0.1 + 0.2, 0.3) // true
+
+1.1 + 1.3 === 2.4 // false
+withinErrorMargin(1.1 + 1.3, 2.4) // true
+```
+
+
+
+# 函数的扩展
+
+## 函数参数默认值
+
+使用参数默认值的话不能有同名参数
+
+```javascript
+// 不报错
+function foo(x, x, y) {
+  // ...
+}
+
+// 报错
+function foo(x, x, y = 1) {
+  // ...
+}
+// SyntaxError: Duplicate parameter name not allowed in this context
+```
+
+每次都是重新计算默认表达式的值，不传值
+
+```javascript
+let x = 99;
+function foo(p = x + 1) {
+  console.log(p);
+}
+
+foo() // 100
+
+x = 100;
+foo() // 101
+```
 
 
 
@@ -745,40 +1449,7 @@ class Colorpoint extends Point {
 ```
 >constructor内定义的方法和属性是实例对象自己的，而constructor外定义的方法和属性则是所有实力对象可以共享的  
 
-# 模版字符串
-```JavaScript
-// es6
-const a = 20;
-const b = 30;
-const string = `${a}+${b}=${a+b}`;
 
-// es5
-var a = 20;
-var b = 30;
-var string = a + "+" + b + "=" + (a + b);
-```
-使用 `` 将整个字符串包裹起来，而在其中使用 ${} 来包裹一个变量或者一个表达式。
-
-
-
-# 函数默认参数
-```JavaScript
-//ES5
-function add(x, y) {
-    var x = x || 20;
-    var y = y || 30;
-    return x + y;
-}
-
-console.log(add()); // 50
-
-//ES6
-function add(x = 20, y = 30) {
-    return x + y;
-}
-
-console.log(add());
-```
 
 # 展开运算符
 ```JavaScript
