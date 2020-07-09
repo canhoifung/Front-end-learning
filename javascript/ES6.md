@@ -1307,7 +1307,9 @@ withinErrorMargin(1.1 + 1.3, 2.4) // true
 
 # 函数的扩展
 
-## 函数参数默认值
+## 函数使用
+
+### 函数参数默认值
 
 使用参数默认值的话不能有同名参数
 
@@ -1338,15 +1340,158 @@ x = 100;
 foo() // 101
 ```
 
+### 与解构赋值默认值结合
 
+```javascript
+function foo({x, y = 5}) {
+  console.log(x, y);
+}
 
+foo({}) // undefined 5
+foo({x: 1}) // 1 5
+foo({x: 1, y: 2}) // 1 2
+foo() // TypeError: Cannot read property 'x' of undefined
+```
 
+```javascript
+function foo({x, y = 5} = {}) {
+  console.log(x, y);
+}
 
+foo() // undefined 5
+```
 
+如果函数的参数为对象，就不能省略第二个参数，除非对象参数设置了默认值
 
+```javascript
+//情况1：
+    function fetch(url, { body = '', method = 'GET', headers = {} }) {
+        console.log(method);
+    }
 
+    fetch('http://example.com', {})
+    // "GET"
 
-# 箭头函数
+    fetch('http://example.com')
+    // 报错
+//情况2：
+    function fetch(url, { body = '', method = 'GET', headers = {} } = {}) 	{
+      console.log(method);
+    }
+
+    fetch('http://example.com')
+    // "GET"
+```
+
+是否设置对象结构赋值默认值的区别：
+
+```javascript
+// 写法一:函数参数的默认值是空对象，但是设置了对象解构赋值的默认值
+function m1({x = 0, y = 0} = {}) {
+  return [x, y];
+}
+
+// 写法二:函数参数的默认值是一个有具体属性的对象，但是没有设置对象解构赋值的默认值
+function m2({x, y} = { x: 0, y: 0 }) {
+  return [x, y];
+}
+```
+
+```javascript
+// 函数没有参数的情况
+m1() // [0, 0]
+m2() // [0, 0]
+
+// x 和 y 都有值的情况
+m1({x: 3, y: 8}) // [3, 8]
+m2({x: 3, y: 8}) // [3, 8]
+
+// x 有值，y 无值的情况
+m1({x: 3}) // [3, 0]
+m2({x: 3}) // [3, undefined]
+
+// x 和 y 都无值的情况
+m1({}) // [0, 0];
+m2({}) // [undefined, undefined]
+
+m1({z: 3}) // [0, 0]
+m2({z: 3}) // [undefined, undefined]
+```
+
+### 参数默认值的位置问题
+
+定义默认值的参数应该是函数的末尾参数，这样可以判断到底可以省略哪些参数
+
+如果是非末尾参数的话实际上是没有办法省略的，若要用默认值只能传入undefined
+
+### length属性返回值改变
+
+设置默认值后，length将返回没有指定默认值的参数个数
+
+```javascript
+(function (a) {}).length // 1
+(function (a = 5) {}).length // 0
+(function (a, b, c = 5) {}).length // 2
+```
+
+==`length`的含义：函数预期传入的参数个数==
+
+设置了rest参数也不会计入length属性
+
+## rest参数
+
+rest参数：`...变量名`
+
+用于获取函数的多余参数，是一个数组
+
+而`arguments`是一个类似数组的对象，要使用数组的方法，需要先`Array.prototype.slice.call`转为数组
+
+==rest只能作为最后一个参数==
+
+## name属性
+
+返回函数的函数名
+
+ES6的`name`会返回函数声明的函数名和函数表达式的变量名
+
+而ES6的`name`对于函数表达式会返回空字符串
+
+若函数具有名，且赋值给变量，则还是返回原来的名字
+
+## 箭头函数
+
+使用`=>`定义函数
+
+参数部分用圆括号包裹
+
+代码块只有一条返回语句，可以省略大括号和return语句
+
+代码块多于一条语句就使用大括号包裹，并用return返回
+
+==如果返回的是一个对象，需要大括号外包一个括号来解析==
+
+==如果不需要返回值且只有一行语句，就使用`void doesNotReturn()`来写==
+
+参数可以搭配解构赋值
+
+```javascript
+const full = ({ first, last }) => first + ' ' + last;
+
+// 等同于
+function full(person) {
+  return person.first + ' ' + person.last;
+}
+```
+
+## 使用注意点
+
+1. 函数体内的`this`对象，就是定义时所在的对象，而不是使用时所在的对象。
+
+2. 不可以当作构造函数，也就是说，不可以使用`new`命令，否则会抛出一个错误。
+
+3. 不可以使用`arguments`对象，该对象在函数体内不存在。如果要用，可以用 rest 参数代替。
+
+4. 不可以使用`yield`命令，因此箭头函数不能用作 Generator 函数。
 
 ```JavaScript
 // es5
@@ -1499,3 +1644,4 @@ var person = {
   age: age
 };
 ```
+
