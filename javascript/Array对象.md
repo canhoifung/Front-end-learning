@@ -468,6 +468,26 @@ arr.filter(myFilter, obj) // [8, 4, 9]
 
 返回`true`条件的符合find函数的第一个值/索引
 
+回调函数接收三个参数：当前值，当前index，原数组
+
+```javascript
+[1, 5, 10, 15].find(function(value, index, arr) {
+  return value > 9;
+}) // 10
+```
+
+方法的第二个参数为绑定的`this`对象
+
+且可以发现`NaN`
+
+```javascript
+[NaN].indexOf(NaN)
+// -1
+
+[NaN].findIndex(y => Object.is(NaN, y))
+// 0
+```
+
 ### `fill()`
 
 用value重复填充数组
@@ -653,6 +673,43 @@ a.indexOf('y') // -1
 ```javascript
 var a [1,2,3];
 a.includes(1);//true
+```
+
+### `entries()`、`keys()`、`values()`
+
+分别返回键值对，键名，键值
+
+### `flat()`、`flatMap()`
+
+`flat()`用于将嵌套的数组拉平，变成一维数组，返回一个新数组
+
+```javascript
+[1, 2, [3, 4]].flat()
+// [1, 2, 3, 4]
+```
+
+默认拉平1层，多层需要填写参数
+
+```javascript
+[1, 2, [3, [4, 5]]].flat()
+// [1, 2, 3, [4, 5]]
+
+[1, 2, [3, [4, 5]]].flat(2)
+// [1, 2, 3, 4, 5]
+```
+
+==会跳过空位==
+
+
+
+`flatMap()`只能展开一层，参数为遍历函数，参数为当前成员，当前index，原数组
+
+第二个参数可以绑定`this`
+
+```javascript
+// 相当于 [[[2]], [[4]], [[6]], [[8]]].flat()
+[1, 2, 3, 4].flatMap(x => [[x * 2]])
+// [[2], [4], [6], [8]]
 ```
 
 

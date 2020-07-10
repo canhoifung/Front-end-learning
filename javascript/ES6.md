@@ -1483,75 +1483,251 @@ function full(person) {
 }
 ```
 
-## 使用注意点
+### 使用注意点
 
 1. 函数体内的`this`对象，就是定义时所在的对象，而不是使用时所在的对象。
 
+```javascript
+function Timer() {
+  this.s1 = 0;
+  this.s2 = 0;
+  // 箭头函数
+  setInterval(() => this.s1++, 1000);
+  // 普通函数
+  setInterval(function () {
+    this.s2++;
+  }, 1000);
+}
+
+var timer = new Timer();
+
+setTimeout(() => console.log('s1: ', timer.s1), 3100);
+setTimeout(() => console.log('s2: ', timer.s2), 3100);
+// s1: 3
+// s2: 0
+//s2的this指向执行时所在的作用域，即window
+```
+
 2. 不可以当作构造函数，也就是说，不可以使用`new`命令，否则会抛出一个错误。
+
+==因为箭头函数没有自己的`this`==
+
+```javascript
+// ES6
+function foo() {
+  setTimeout(() => {
+    console.log('id:', this.id);
+  }, 100);
+}
+
+// ES5
+function foo() {
+  var _this = this;
+
+  setTimeout(function () {
+    console.log('id:', _this.id);
+  }, 100);
+}
+```
 
 3. 不可以使用`arguments`对象，该对象在函数体内不存在。如果要用，可以用 rest 参数代替。
 
 4. 不可以使用`yield`命令，因此箭头函数不能用作 Generator 函数。
 
-```JavaScript
-// es5
-var fn = function(a, b) {
-    return a + b;
+### 不适用场合
+
+1. 定义对象的方法，且方法内部包含`this`
+
+```javascript
+const cat = {
+  lives: 9,
+  jumps: () => {
+    this.lives--;
+  }
 }
-
-// es6 箭头函数写法，当函数直接被return时，可以省略函数体的括号
-const fn = (a, b) => a + b;
-
-// es5
-var foo = function() {
-    var a = 20；
-    var b = 30;
-    return a + b;
-}
-
-// es6
-const foo = () => {
-   const a = 20;
-   const b = 30;
-   return a + b;
-}
-
-如果参数不是一个，就需要用括号()括起来：
-// 两个参数:
-(x, y) => x * x + y * y
-
-// 无参数:
-() => 3.14
-
-// 可变参数:
-(x, y, ...rest) => {
-    var i, sum = x + y;
-    for (i=0; i<rest.length; i++) {
-        sum += rest[i];
-    }
-    return sum;
-}
-
-如果要返回一个对象，就要注意，如果是单表达式，这么写的话会报错：
-
-// SyntaxError:
-x => { foo: x }
-因为和函数体的{ ... }有语法冲突，所以要改为：
-
-// 尤其是返回JSON对象时
-x => ({ foo: x })
+//对象不构成单独的作用域，因此jumps指向全局作用域
 ```
->箭头函数可以替换函数表达式，但是不能替换函数声明  
->当函数参数只有一个时，括号可以省略；但是没有参数时，括号不可以省略。  
->函数体（中括号）中有且只有一行return语句时，中括号及return 关键字可以省略。
 
-**特点:**
-1. 没有this,super,arguments,new.target绑定  
-2. 不能通过new关键字调用  
-3. 没有原型  
-4. 不能改变this的绑定 继承当前上下文的this  
-5. 不支持arguments对象  
-6. 不支持重复命名的参数  
+2. 需要动态`this`时
+
+如设置监听函数
+
+## Function.prototype.toString()更改
+
+现在不会省略注释和空格，会返回一模一样的原始代码
+
+```javascript
+function /* foo comment */ foo () {}
+
+foo.toString()
+// "function /* foo comment */ foo () {}"
+```
+
+
+
+# 数组的扩展
+
+## 扩展运算符`...`
+
+类似rest参数的逆运算，将一个数组转为用逗号分割的参数序列
+
+```javascript
+console.log(...[1, 2, 3])
+// 1 2 3
+
+console.log(1, ...[2, 3, 4], 5)
+// 1 2 3 4 5
+
+[...document.querySelectorAll('div')]
+// [<div>, <div>, <div>]
+
+[...[], 1]
+// [1]
+```
+
+==扩展运算符后是一个空数组，则不产生效果==
+
+1. 可以替代apply
+
+```javascript
+// ES5 的写法
+Math.max.apply(null, [14, 3, 77])
+
+// ES6 的写法
+Math.max(...[14, 3, 77])
+
+// 等同于
+Math.max(14, 3, 77);
+```
+
+2. 可用于克隆数组
+
+```javascript
+//ES5
+const a1 = [1, 2];
+const a2 = a1.concat();
+a2[0] = 2;
+a1 // [1, 2]
+
+//ES6
+const a1 = [1, 2];
+// 写法一
+const a2 = [...a1];
+// 写法二
+const [...a2] = a1;
+```
+
+3. 合并数组
+
+```javascript
+const arr1 = ['a', 'b'];
+const arr2 = ['c'];
+const arr3 = ['d', 'e'];
+
+// ES5 的合并数组
+arr1.concat(arr2, arr3);
+// [ 'a', 'b', 'c', 'd', 'e' ]
+
+// ES6 的合并数组
+[...arr1, ...arr2, ...arr3]
+// [ 'a', 'b', 'c', 'd', 'e' ]
+```
+
+4. 和解构赋值结合
+
+```javascript
+//这种情况下扩展运算符只能放在参数最后一位
+const [first, ...rest] = [1, 2, 3, 4, 5];
+first // 1
+rest  // [2, 3, 4, 5]
+```
+
+5. 将字符串转为数组
+
+```javascript
+[...'hello']
+// [ "h", "e", "l", "l", "o" ]
+```
+
+6. Map、Set结构，Generator函数都可以使用扩展运算符
+
+因为他们都部署了Iterator接口
+
+## Array.from()
+
+用于将类似数组的对象和可遍历对象转为数组
+
+==需要部署了`Iterator`接口的数据结构或者拥有`length`属性==
+
+```javascript
+let arrayLike = {
+    '0': 'a',
+    '1': 'b',
+    '2': 'c',
+    length: 3
+};
+
+// ES5的写法
+var arr1 = [].slice.call(arrayLike); // ['a', 'b', 'c']
+
+// ES6的写法
+let arr2 = Array.from(arrayLike); // ['a', 'b', 'c']
+```
+
+可以接收第二个参数，作用类似数组的`map`，接受一个函数
+
+如果第二个参数的`map`函数内用到了`this`，还可以传入第三个参数绑定`this`
+
+可以转换字符串
+
+## Array.of()
+
+用于将一组值转换为数组
+
+可以用于替代`Array()`和`new Array()`，来防止以下这种情况
+
+```javascript
+Array() // []
+Array(3) // [, , ,]
+Array(3, 11, 8) // [3, 11, 8]
+
+Array.of() // []
+Array.of(undefined) // [undefined]
+Array.of(1) // [1]
+Array.of(1, 2) // [1, 2]
+```
+
+功能类似：
+
+```javascript
+function ArrayOf(){
+  return [].slice.call(arguments);
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # 继承 class、extends、super
 ```JavaScript
