@@ -498,6 +498,8 @@ arr.fill(value,start,end);
 
 ### `copyWithin()`
 
+==会连空位一起拷贝==
+
 ```javascript
 arr.copyWithin(target,start,end)
 ```

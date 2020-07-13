@@ -1650,6 +1650,7 @@ rest  // [2, 3, 4, 5]
 ```
 
 6. Map、Set结构，Generator函数都可以使用扩展运算符
+7. ==会将数组的空位转为`undefined`==
 
 因为他们都部署了Iterator接口
 
@@ -1680,6 +1681,8 @@ let arr2 = Array.from(arrayLike); // ['a', 'b', 'c']
 
 可以转换字符串
 
+==会将数组的空位转为`undefined`==
+
 ## Array.of()
 
 用于将一组值转换为数组
@@ -1705,13 +1708,137 @@ function ArrayOf(){
 }
 ```
 
+## 对数组空位的处理
+
+空位，指没有任何值，而不是undefined
+
+```javascript
+0 in [undefined, undefined, undefined] // true
+0 in [, , ,] // false
+```
 
 
 
+ES5:
+
+- `forEach()`, `filter()`, `reduce()`, `every()` 和`some()`都会跳过空位。
+- `map()`会跳过空位，但会保留这个值
+- `join()`和`toString()`会将空位视为`undefined`，而`undefined`和`null`会被处理成空字符串。
+
+ES6:
+
+明确空位转为`undefined`
+
++ `Array.from`将数组空位转为`undefined`
++ `...`扩展运算符将数组空位转为`undefined`
++ `copyWithin()`会连空位一起拷贝
++ `fill`连空位也会填充
++ `for...of`会遍历空位
++ `entries()`、`keys()`、`values()`、`find()`和`findIndex()`会将空位处理成`undefined`。
 
 
 
+# 对象的拓展
 
+## 属性简洁表示
+
+在大括号内直接写入变量和函数
+
+属性名就是变量名，属性值就是变量值
+
+```javascript
+const foo = 'bar';
+const baz = {foo};
+baz // {foo: "bar"}
+
+// 等同于
+const baz = {foo: foo};
+```
+
+```javascript
+const o = {
+  method() {
+    return "Hello!";
+  }
+};
+
+// 等同于
+
+const o = {
+  method: function() {
+    return "Hello!";
+  }
+};
+```
+
+==不能用于构造函数==
+
+## 属性名表达式
+
+ES6允许把表达式放在方括号内
+
+```javascript
+//定义属性名
+let lastWord = 'last word'
+const a = {
+  'first word': 'hello',
+  [lastWord]: 'world'
+};
+a['first word'] // "hello"
+a[lastWord] // "world"
+a['last word'] // "world"
+
+//定义方法名
+let obj = {
+  ['h' + 'ello']() {
+    return 'hi';
+  }
+};
+obj.hello() // hi
+```
+
+==不能与简洁表示法共用，会报错==
+
+==属性名表达式如果是对象，默认会将其转为字符串`[object Object]`==
+
+## name属性
+
+正常返回函数名
+
+若使用了取值函数和存值函数，则属性会在这两个属性上
+
+```javascript
+const obj = {
+  get foo() {},
+  set foo(x) {}
+};
+
+obj.foo.name
+// TypeError: Cannot read property 'name' of undefined
+
+const descriptor = Object.getOwnPropertyDescriptor(obj, 'foo');
+
+descriptor.get.name // "get foo"
+descriptor.set.name // "set foo"
+```
+
+特殊情况：
+
++ `bind`方法创造的函数，`name`属性返回`bound`加上原函数的名字
++ `Function`构造函数创造的函数，`name`属性返回`anonymous`
+
++ 若为`Symbol`值，则返回Symbol值的描述
+
+```javascript
+const key1 = Symbol('description');
+const key2 = Symbol();
+let obj = {
+  [key1]() {},
+  [key2]() {},
+};
+obj[key1].name // "[description]"
+obj[key2].name // ""
+```
 
 
 
@@ -1771,53 +1898,4 @@ class Colorpoint extends Point {
 >constructor内定义的方法和属性是实例对象自己的，而constructor外定义的方法和属性则是所有实力对象可以共享的  
 
 
-
-# 展开运算符
-```JavaScript
-const arr1 = [1, 2, 3];
-const arr2 = [...arr1, 10, 20, 30];
-
-// 这样，arr2 就变成了[1, 2, 3, 10, 20, 30];
-
-//对对象数据
-const obj1 = {
-  a: 1,
-  b: 2, 
-  c: 3
-}
-
-const obj2 = {
-  ...obj1,
-  d: 4,
-  e: 5,
-  f: 6
-}
-
-// 结果类似于 const obj2 = Object.assign({}, obj1, {d: 4})
-
-//用于解析结构
-const add = (a, b, ...more) => {
-    return more.reduce((m, n) => m + n) + a + b
-}
-
-console.log(add(1, 23, 1, 2, 3, 4, 5)) // 39
-```
-
-# 对象字面量与class
-```JavaScript
-const name = 'Jane';
-const age = 20
-
-// es6
-const person = {
-  name,
-  age
-}
-
-// es5
-var person = {
-  name: name,
-  age: age
-};
-```
 
