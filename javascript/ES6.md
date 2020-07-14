@@ -1,4 +1,4 @@
-# let，const
+# Obejct对象
 
 let 定义的变量不会被变量提升，const 定义的常量不能被修改，let 和 const 都是块级作用域
 
@@ -1840,17 +1840,258 @@ obj[key1].name // "[description]"
 obj[key2].name // ""
 ```
 
+## enumerable可枚举性属性
 
+若为`false`，则四个操作会忽略这个属性
 
+- `for...in`循环：只遍历对象自身的和==继承的==可枚举的属性。
+- `Object.keys()`：返回对象自身的所有可枚举的属性的键名。
+- `JSON.stringify()`：只串行化对象自身的可枚举的属性。
+- `Object.assign()`： 忽略`enumerable`为`false`的属性，只拷贝对象自身的可枚举的属性。
 
+ES6中所有Class的原型的方法都是不可枚举的
 
+## 属性遍历方法
 
+**（1）for...in**
 
+遍历对象自身的和继承的可枚举属性（不含 Symbol 属性）。
 
+**（2）Object.keys(obj)**
 
+返回一个数组，包括对象自身的（不含继承的）所有可枚举属性（不含 Symbol 属性）的键名。
 
+**（3）Object.getOwnPropertyNames(obj)**
 
+返回一个数组，包含对象自身的所有属性（不含 Symbol 属性，但是==包括不可枚举==属性）的键名。
 
+**（4）Object.getOwnPropertySymbols(obj)**
+
+返回一个数组，包含对象自身的所有 Symbol 属性的键名。
+
+**（5）Reflect.ownKeys(obj)**
+
+返回一个数组，包含对象自身的（不含继承的）所有键名，不管键名是 Symbol 或字符串，也不管是否可枚举。
+
+### 遍历次序规则
+
+- 首先遍历所有数值键，按照数值升序排列。
+- 其次遍历所有字符串键，按照加入时间升序排列。
+- 最后遍历所有 Symbol 键，按照加入时间升序排列。
+
+## super关键字
+
+类似`this`，但`super`指向当前对象的原型对象
+
+相当于：`Object.getPrototyeOf(this).foo`
+
+```javascript
+const proto = {
+  foo: 'hello'
+};
+
+const obj = {
+  foo: 'world',
+  find() {
+    return super.foo;
+  }
+};
+
+Object.setPrototypeOf(obj, proto);
+obj.find() // "hello"
+```
+
+==只能用在对象的方法中==
+
+==而目前只有对象方法的简写法可以让JavaScript引擎确认是对象的方法==
+
+```javascript
+// 报错
+const obj = {
+  foo: function () {
+    return super.foo
+  }
+}
+```
+
+```javascript
+const proto = {
+  x: 'hello',
+  foo() {
+    console.log(this.x);
+  },
+};
+const obj = {
+  x: 'world',
+  foo() {
+    super.foo();
+  }
+}
+Object.setPrototypeOf(obj, proto);
+obj.foo() // "world"
+```
+
+上面的`super.foo`指向原型对象`proto`的`foo`，但是这里绑定的`this`指向的是当前对象`obj`
+
+## 扩展运算符
+
+### 解构赋值
+
+```javascript
+let { x, y, ...z } = { x: 1, y: 2, a: 3, b: 4 };
+x // 1
+y // 2
+z // { a: 3, b: 4 }
+```
+
+==必须是最后一个参数==
+
+==浅拷贝==
+
+```javascript
+let obj = { a: { b: 1 } };
+let { ...x } = obj;
+obj.a.b = 2;
+x.a.b // 2
+```
+
+==不会复制继承自原型对象的属性==
+
+### 扩展运算符
+
+用于取出参数对象的所有可遍历属性，拷贝到当前对象中
+
+```javascript
+let z = { a: 3, b: 4 };
+let n = { ...z };
+n // { a: 3, b: 4 }
+
+let foo = { ...['a', 'b', 'c'] };
+foo
+// {0: "a", 1: "b", 2: "c"}
+```
+
+==若参数不是对象，会自动转为包装对象==
+
+==若参数是一个字符串，会转为类似数组的对象==
+
+可用于合并对象
+
+```javascript
+let ab = { ...a, ...b };
+// 等同于
+let ab = Object.assign({}, a, b);
+```
+
+如果用户自定义的属性，放在扩展运算符后面，则扩展运算符内部的同名属性会被覆盖掉
+
+```javascript
+let aWithOverrides = { ...a, x: 1, y: 2 };
+// 等同于
+let aWithOverrides = { ...a, ...{ x: 1, y: 2 } };
+// 等同于
+let x = 1, y = 2, aWithOverrides = { ...a, x, y };
+// 等同于
+let aWithOverrides = Object.assign({}, a, { x: 1, y: 2 });
+```
+
+把自定义属性放在扩展运算符前面，就变成了设置新对象的默认属性值。
+
+```javascript
+let aWithDefaults = { x: 1, y: 2, ...a };
+// 等同于
+let aWithDefaults = Object.assign({}, { x: 1, y: 2 }, a);
+// 等同于
+let aWithDefaults = Object.assign({ x: 1, y: 2 }, a);
+```
+
+## 链判断运算符 `?.`
+
+```javascript
+const firstName = message?.body?.user?.firstName || 'default';
+const fooValue = myForm.querySelector('input[name=foo]')?.value
+```
+
+判断左侧对象是否为`null`或`undefined`，是就返回`undefined`，否就表示对象存在继续运算
+
+用法：
+
+- `obj?.prop` // 对象属性
+- `obj?.[expr]` // 同上
+- `func?.(...args)` // 函数或对象方法的调用
+
+特殊情况
+
+1. 短路机制
+
+```javascript
+a?.[++x]
+// 等同于
+a == null ? undefined : a[++x]
+```
+
+2. delete运算符
+
+```javascript
+delete a?.b
+// 等同于
+a == null ? undefined : delete a.b
+```
+
+3. 括号
+
+```javascript
+(a?.b).c
+// 等价于
+(a == null ? undefined : a.b).c
+```
+
+4. 报错
+
+```javascript
+// 构造函数
+new a?.()
+new a?.b()
+
+// 链判断运算符的右侧有模板字符串
+a?.`{b}`
+a?.b`{c}`
+
+// 链判断运算符的左侧是 super
+super?.()
+super?.foo
+
+// 链运算符用于赋值运算符左侧
+a?.b = c
+```
+
+5. 右侧不得是十进制数值
+
+```javascript
+foo?.3.0;
+//等同于
+foo? .3:0;
+```
+
+## `??`Null判断运算符
+
+只有运算符左侧的值为`null`或`undefined`时，才会返回右边的值
+
+```javascript
+const headerText = response.settings.headerText ?? 'Hello, world!';
+const animationDuration = response.settings.animationDuration ?? 300;
+const showSplashScreen = response.settings.showSplashScreen ?? true;
+```
+
+==如果多个逻辑运算符一起使用，必须用括号表明优先级，否则报错==
+
+```javascript
+// 报错
+lhs && middle ?? rhs
+lhs ?? middle && rhs
+lhs || middle ?? rhs
+lhs ?? middle || rhs
+```
 
 
 
@@ -1896,6 +2137,44 @@ class Colorpoint extends Point {
 }
 ```
 >constructor内定义的方法和属性是实例对象自己的，而constructor外定义的方法和属性则是所有实力对象可以共享的  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
