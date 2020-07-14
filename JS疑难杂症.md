@@ -331,7 +331,7 @@ Function，Object，Array，RegExp都是函数
 
 所有对象都会有`__proto__`属性，指向构造函数的prototype
 
-原型链就是根据`__proto_`属性往上的过程，查找对象属性方法时，对象没有，就到`constructor`去找，没有就到`__proto__`去找，再没有就到`__proto__.constructor`去找
+原型链就是根据`__proto__`属性往上的过程，查找对象属性方法时，对象没有，就到`constructor`去找，没有就到`__proto__`去找，再没有就到`__proto__.constructor`去找
 
 ![img](JS疑难杂症.assets/13902845-babea8f0cde0d791.webp)
 
