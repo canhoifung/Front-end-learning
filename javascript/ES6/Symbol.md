@@ -79,6 +79,45 @@ a[mySymbol] // undefined
 a['mySymbol'] // "Hello!"
 ```
 
+## 属性的遍历
+
+Symbol作为属性名时，不会出现在：
+
+1. `for...in`
+2. `for...of`
+3. `Object.keys()`
+4. `Object.getOwnPropertyNames()`
+5. `JSON.stringify()`
+
+但可以通过：
+
+`Object.getOwnPropertySymbols()`来获取制定对象的所有Symbol属性名
+
+==不是一个私有属性==
+
+## Symbol.for()，Symbol.keyFor()
+
+`Symbol.for()`接受一个字符串作为参数，搜索有没有以该参数作为名称的Symbol值，有就返回这个值，没有就新建并==注册到全局==
+
+```javascript
+let s1 = Symbol.for('foo');
+let s2 = Symbol.for('foo');
+
+s1 === s2 // true
+```
+
+
+
+`Symbol.keyFor()`返回一个已登记的Symbol类型值的key
+
+```javascript
+let s1 = Symbol.for("foo");
+Symbol.keyFor(s1) // "foo"
+
+let s2 = Symbol("foo");
+Symbol.keyFor(s2) // undefined
+```
+
 
 
 
