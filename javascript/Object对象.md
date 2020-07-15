@@ -162,11 +162,60 @@ Object.keys(obj).length // 2
 Object.getOwnPropertyNames(obj).length // 2
 ```
 
+### `Object.is()`
+
+与`===`行为基本一致，但：
+
+```javascript
++0 === -0 //true
+NaN === NaN // false
+
+Object.is(+0, -0) // false
+Object.is(NaN, NaN) // true
+```
+
+### `Object.assign()`
+
+用于对象的合并，将所有==自身的====可枚举==属性，复制到目标对象
+
+```javascript
+const target = { a: 1 };
+
+const source1 = { b: 2 };
+const source2 = { c: 3 };
+
+Object.assign(target, source1, source2);
+target // {a:1, b:2, c:3}
+```
+
+第一个参数为目标对象，后面都是源对象
+
+后面同名属性覆盖前面同名属性
+
+首参数不是对象会先转为对象，若参数是`undefined`或者`null`，则报错
+
+其他位置的话，除了字符串会以数组形式拷贝，其他都不会有效果
+
+==浅拷贝==：源对象某个属性值为对象，则拷贝的是对象的引用
+
+可用于：
+
+1. 为对象添加属性
+2. 为对象添加方法
+3. 克隆对象
+4. 合并多个对象
+5. 为属性指定默认值
+
+### `Object.fromEntries()`
+
+将一个键值对数组转为对象
+
 ### 其他方法
 
 **（1）对象属性模型的相关方法**
 
-- `Object.getOwnPropertyDescriptor()`：获取某个属性的描述对象。
+- `Object.getOwnPropertyDescriptor(obj,key)`：获取某个属性的描述对象。
+- `Object.getOwnPropertyDescriptors(obj)`：获取指定对象所有自身非继承的描述对象。
 - `Object.defineProperty()`：通过描述对象，定义某个属性。
 - `Object.defineProperties()`：通过描述对象，定义多个属性。
 
