@@ -129,11 +129,192 @@ map.get('title') // "Author"
 
 `key`已存在，则键值更新
 
+### Map.prototype.get(key)
+
+读取`key`值对应的键值，若无则返回`undefined`
+
+### Map.prototype.has(key)
+
+返回布尔值
+
+### Map.prototype.delete(key)
+
+删除某个键，成功返回`true`，否则返回`false`
+
+### Map.prototype.clear()
+
+清除所有成员
+
+## 遍历方法
+
+- `Map.prototype.keys()`：返回键名的遍历器。
+- `Map.prototype.values()`：返回键值的遍历器。
+- `Map.prototype.entries()`：返回所有成员的遍历器。
+- `Map.prototype.forEach()`：遍历 Map 的所有成员。
+
+遍历顺序是插入顺序
+
+## 数据结构转换
+
+### Map转数组
+
+```javascript
+const myMap = new Map()
+  .set(true, 7)
+  .set({foo: 3}, ['abc']);
+[...myMap]
+// [ [ true, 7 ], [ { foo: 3 }, [ 'abc' ] ] ]
+```
+
+### 数组转为 Map
+
+将数组传入 Map 构造函数，就可以转为 Map。
+
+```javascript
+new Map([
+  [true, 7],
+  [{foo: 3}, ['abc']]
+])
+// Map {
+//   true => 7,
+//   Object {foo: 3} => ['abc']
+// }
+```
+
+### Map 转为对象
+
+如果所有 Map 的键都是字符串，它可以无损地转为对象。
+
+```javascript
+function strMapToObj(strMap) {
+  let obj = Object.create(null);
+  for (let [k,v] of strMap) {
+    obj[k] = v;
+  }
+  return obj;
+}
+
+const myMap = new Map()
+  .set('yes', true)
+  .set('no', false);
+strMapToObj(myMap)
+// { yes: true, no: false }
+```
+
+如果有非字符串的键名，那么这个键名会被转成字符串，再作为对象的键名。
+
+### 对象转为 Map
+
+对象转为 Map 可以通过`Object.entries()`。
+
+```javascript
+let obj = {"a":1, "b":2};
+let map = new Map(Object.entries(obj));
+```
+
+此外，也可以自己实现一个转换函数。
+
+```javascript
+function objToStrMap(obj) {
+  let strMap = new Map();
+  for (let k of Object.keys(obj)) {
+    strMap.set(k, obj[k]);
+  }
+  return strMap;
+}
+
+objToStrMap({yes: true, no: false})
+// Map {"yes" => true, "no" => false}
+```
+
+### Map 转为 JSON
+
+Map 转为 JSON 要区分两种情
+
+一种情况是，Map 的键名都是字符串，这时可以选择转为对象 JSON。
+
+```javascript
+function strMapToJson(strMap) {
+  return JSON.stringify(strMapToObj(strMap));
+}
+
+let myMap = new Map().set('yes', true).set('no', false);
+strMapToJson(myMap)
+// '{"yes":true,"no":false}'
+```
+
+另一种情况是，Map 的键名有非字符串，这时可以选择转为数组 JSON。
+
+```javascript
+function mapToArrayJson(map) {
+  return JSON.stringify([...map]);
+}
+
+let myMap = new Map().set(true, 7).set({foo: 3}, ['abc']);
+mapToArrayJson(myMap)
+// '[[true,7],[{"foo":3},["abc"]]]'
+```
+
+### JSON 转为 Map
+
+JSON 转为 Map，正常情况下，所有键名都是字符串。
+
+```javascript
+function jsonToStrMap(jsonStr) {
+  return objToStrMap(JSON.parse(jsonStr));
+}
+
+jsonToStrMap('{"yes": true, "no": false}')
+// Map {'yes' => true, 'no' => false}
+```
+
+但是，有一种特殊情况，整个 JSON 就是一个数组，且每个数组成员本身，又是一个有两个成员的数组。这时，它可以一一对应地转为 Map。这往往是 Map 转为数组 JSON 的逆操作。
+
+```javascript
+function jsonToMap(jsonStr) {
+  return new Map(JSON.parse(jsonStr));
+}
+
+jsonToMap('[[true,7],[{"foo":3},["abc"]]]')
+// Map {true => 7, Object {foo: 3} => ['abc']}
+```
 
 
 
+# WeakMap
 
+与Map结构类似
 
+区别：
+
+1. 只接受对象作为键名，`null`除外
+2. 指向的对象，不计入垃圾回收机制
+
+用于想在某个对象上存放一些数据
+
+有助于防止内存泄漏
+
+键名弱引用
+
+键值任意
+
+```javascript
+const wm = new WeakMap();
+let key = {};
+let obj = {foo: 1};
+
+wm.set(key, obj);
+obj = null;
+wm.get(key)
+// Object {foo: 1}
+```
+
+## 语法
+
+1. 没有遍历操作
+2. 没有`size`属性
+3. 不支持`clear`方法
+4. 只有`get()`、`set()`、`has()`、`delete()`
 
 
 
