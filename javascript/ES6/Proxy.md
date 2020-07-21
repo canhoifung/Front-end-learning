@@ -77,7 +77,7 @@ proxy.foo  // TypeError: Invariant check failed
 1. 目标对象
 2. 属性名
 3. 属性值
-4. Proxt实例本身（可选）
+4. Proxy实例本身（可选）
 
 ```javascript
 const handler = {
@@ -281,6 +281,139 @@ Object.isExtensible(p)
 // "called"
 // true
 ```
+
+### ownKeys()
+
+用于拦截对象自身属性的读取操作
+
+具体是：
+
+- `Object.getOwnPropertyNames()`
+- `Object.getOwnPropertySymbols()`
+- `Object.keys()`
+- `for...in`循环
+
+以下属性会被自动过滤：
+
+- 目标对象上不存在的属性
+- 属性名为 Symbol 值
+- 不可遍历（`enumerable`）的属性
+
+```javascript
+let target = {
+  a: 1,
+  b: 2,
+  c: 3
+};
+
+let handler = {
+  ownKeys(target) {
+    return ['a'];
+  }
+};
+
+let proxy = new Proxy(target, handler);
+
+Object.keys(proxy)
+// [ 'a' ]
+```
+
+### preventExtensions()
+
+拦截`Object.preventExtensions()`，返回一个布尔值
+
+只有目标对象不可拓展（即`Object.isExtensible(proxy)==false`）时才能返回`true`，否则报错
+
+```javascript
+var proxy = new Proxy({}, {
+  preventExtensions: function(target) {
+    return true;
+  }
+});
+
+Object.preventExtensions(proxy)
+// Uncaught TypeError: 'preventExtensions' on proxy: trap returned truish but the proxy target is extensible
+```
+
+```javascript
+//可以在方法内调用一次Object.preventExtensions()
+var proxy = new Proxy({}, {
+  preventExtensions: function(target) {
+    console.log('called');
+    Object.preventExtensions(target);
+    return true;
+  }
+});
+
+Object.preventExtensions(proxy)
+// "called"
+// Proxy {}
+```
+
+### setPrototypeOf()
+
+用于拦截`Object.setPrototypeOf()`方法
+
+==只能返回布尔值==
+
+==如果目标对象不可扩展（non-extensible），`setPrototypeOf()`方法不得改变目标对象的原型==
+
+```javascript
+var handler = {
+  setPrototypeOf (target, proto) {
+    throw new Error('Changing the prototype is forbidden');
+  }
+};
+var proto = {};
+var target = function () {};
+var proxy = new Proxy(target, handler);
+Object.setPrototypeOf(proxy, proto);
+// Error: Changing the prototype is forbidden
+```
+
+## Proxy.revocable()
+
+返回一个可以取消的Proxy实例
+
+```javascript
+let target = {};
+let handler = {};
+
+let {proxy, revoke} = Proxy.revocable(target, handler);
+
+proxy.foo = 123;
+proxy.foo // 123
+
+revoke();
+proxy.foo // TypeError: Revoked
+```
+
+`proxy`属性是`Proxy`实例
+
+`revoke`属性是一个函数，用于取消`Proxy`实例
+
+==使用场景是，目标对象不允许直接访问，必须通过代理访问，一旦访问结束，就收回代理权，不允许再次访问==
+
+## this
+
+Proxy代理的情况下，目标对象内部的`this`关键字指向Proxy代理
+
+```javascript
+const target = {
+  m: function () {
+    console.log(this === proxy);
+  }
+};
+const handler = {};
+
+const proxy = new Proxy(target, handler);
+
+target.m() // false
+proxy.m()  // true
+```
+
+
+
 
 
 
