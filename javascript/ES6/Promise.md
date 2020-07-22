@@ -309,9 +309,71 @@ console.log('one');
 
 ## Promise.reject()
 
+`Promise.reject(reason)`返回一个新的实例，实例的状态为`rejected`
 
+`reason`会原封不动地作为`reject`的理由，变为后续的参数
 
+## 相关应用
 
+### 加载图片
+
+```javascript
+const preloadImage = function (path) {
+  return new Promise(function (resolve, reject) {
+    const image = new Image();
+    image.onload  = resolve;
+    image.onerror = reject;
+    image.src = path;
+  });
+};
+```
+
+### Generator函数管理流程
+
+```javascript
+function getFoo () {
+  return new Promise(function (resolve, reject){
+    resolve('foo');
+  });
+}
+
+const g = function* () {
+  try {
+    const foo = yield getFoo();
+    console.log(foo);
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+function run (generator) {
+  const it = generator();
+
+  function go(result) {
+    if (result.done) return result.value;
+
+    return result.value.then(function (value) {
+      return go(it.next(value));
+    }, function (error) {
+      return go(it.throw(error));
+    });
+  }
+
+  go(it.next());
+}
+
+run(g);
+```
+
+### Promise.try()
+
+只是作为一个提案，便于Promise内是同步操作就同步执行，异步操作就异步执行
+
+```javascript
+Promise.try(() => database.users.get({id: userId}))
+  .then(...)
+  .catch(...)
+```
 
 
 
