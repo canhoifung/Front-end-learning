@@ -1,4 +1,4 @@
-# Obejct对象
+# Number对象
 
 [TOC]
 
