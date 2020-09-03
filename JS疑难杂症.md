@@ -318,27 +318,6 @@ console.log(a); //1
 
 
 
-# 只有函数对象有prototype属性
-
-```javascript
-function Foo(){};
-var foo = new Foo();
-```
-
-foo是一个实例对象，但不是一个函数，因此没有prototype
-
-Function，Object，Array，RegExp都是函数
-
-所有对象都会有`__proto__`属性，指向构造函数的prototype
-
-原型链就是根据`__proto__`属性往上的过程，查找对象属性方法时，对象没有，就到`constructor`去找，没有就到`__proto__`去找，再没有就到`__proto__.constructor`去找
-
-![img](JS疑难杂症.assets/13902845-babea8f0cde0d791.webp)
-
-而`Object.create()`则是创建一个新对象，用参数对象作为新对象的`__proto__`
-
-
-
 # 宏任务和微任务
 
 异步任务的两种
