@@ -1,11 +1,11 @@
 # Promise内部Promise执行顺序问题
 
 ```javascript
-new Promise((resolve, reject) => {
+let p = new Promise((resolve, reject) => {
   console.log("log: 外部promise");
   resolve();
 })
-  .then(() => {
+p.then(() => {
     console.log("log: 外部第一个then");
     new Promise((resolve, reject) => {
       console.log("log: 内部promise");
@@ -21,13 +21,34 @@ new Promise((resolve, reject) => {
   .then(() => {
     console.log("log: 外部第二个then");
   });
+p.then(() => {
+    console.log("log: 外部第一个then2");
+    new Promise((resolve, reject) => {
+      console.log("log: 内部promise2");
+      resolve();
+    })
+      .then(() => {
+        console.log("log: 内部第一个then2");
+      })
+      .then(() => {
+        console.log("log: 内部第二个then2");
+      });
+  })
+  .then(() => {
+    console.log("log: 外部第二个then2");
+  });
 
 // log: 外部promise
 // log: 外部第一个then
 // log: 内部promise
+// log: 外部第一个then2
+// log: 内部promise2
 // log: 内部第一个then
 // log: 外部第二个then
+// log: 内部第一个then2
+// log: 外部第二个then2
 // log: 内部第二个then
+// log: 内部第二个then2
 ```
 
 结论1：
@@ -69,17 +90,17 @@ p.then(() => {
 
    此时剩余任务：
 
-   > 主线程：外部第一个 then，外部第二个 then
+   > 主线程：外部第一个 then，外部第一个同步then，外部第二个 then
    >
    > 微任务队列：空
 
-2. 开始执行外1then，由于`promise`已经`resolved`，直接将回调放入微任务队列
+2. 开始执行外1then和外1同then，由于外部`promise`已经`resolved`，直接将回调放入微任务队列
 
    此时剩余任务：
 
    > 主线程：外2then
    >
-   > 微任务队列：外1then 的回调
+   > 微任务队列：外1then 的回调，外部1同then的回调
 
 3. 由于回调还未执行，因此外1then返回的`promise`仍然是`pending`，此时同步执行外2then，由于前面的`promise`仍然是`pending`，因此外2then的回调存储在函数中，不会执行也不会放入微队列
 
@@ -87,9 +108,9 @@ p.then(() => {
 
    > 主线程：空
    >
-   > 微任务队列：外1then 的回调
+   > 微任务队列：外1then 的回调，外部1同then的回调
 
-4. 开始执行外1then的内容，打印`log:外部第一个then`，随后实例化`promise`，执行打印`log:内部promise`，然后执行`resolve`，然后执行到内1then，此时内部的`promise`已经`resolved`，因此将回调放入微任务队列
+4. 开始执行外1then的内容，打印`log:外部第一个then`，随后实例化`promise`，执行打印`log:内部promise`，然后执行`resolve`，然后执行到内1then，此时内部的`promise`已经`resolved`，（此时进入了异步，开始执行外1同then的回调）因此将回调放入微任务队列
 
    此时剩余任务：
 
