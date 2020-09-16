@@ -81,52 +81,258 @@ promise1.then((res) => {
 
 
 
-# Promise--2
+# Promise --2
+
+[参考链接](https://blog.csdn.net/qq_41672008/article/details/100639104)
 
 ```javascript
-function _Promise(resolver){
+function _Promise(executor){
     this._status = 'pending';
-    this._result = '';
-    resolver(this.resolve.bind(this),this.reject.bind(this));
+    this._value = undefined;
+    this._reason = undefined;
+    this._onFulfilledCbs = [];
+    this._onRejectedCbs = [];
+    
+    try{
+        executor(this.resolve.bind(this),this.reject.bind(this));
+    }catch(e){
+        this.reject(e);
+    }
 };
-_Promise.prototype.resolve = function(result){
-    if(this._status == 'pending'){
+_Promise.prototype.resolve = function(value){
+    if(this._status === 'pending'){
         this._status = 'fullfilled';
-        this._result = result;
+        this._value = value;
+        this._onFulfilledCbs.forEach(fn => fn(this._value));
     }
 };
-_Promise.prototype.reject = function(result){
-    if(this._status == 'pending'){
+
+_Promise.prototype.reject = function(reason){
+    if(this._status === 'pending'){
         this._status = 'rejected';
-        this._result = result;
+        this._reason = reason;
+        this._onRejectedCbs.forEach(fn => fn(this._reason));
     }
 };
-_Promise.prototype.catch = function(isReject){
-    if(this._status === 'rejected'){
-        var err = new TypeError(this._result);
-        var _isPromise = isReject(err);
-        if(_isPromise instanceof _Promise){
-            return _isPromise;
-        };
-        return this;
-    }
-}
-//考虑到Promise.then().then()链式调用，then函数要返回一个_Promise
-_Promise.prototype.then = function(isResolve,isReject){
+
+_Promise.prototype.then = function(onFulfilled,onRejected){
     if(this._status === 'fullfilled'){
-        var _isPromise = isResolve(this._result);
+        let _isPromise = onFulfilled(this._value);
         if(_isPromise instanceof _Promise){
             return _isPromise;
         };
         return this;
-    }else if(this._status === 'rejected' && arguments[1]){
-        var err = new TypeError(this._result);
-        var _isPromise = isReject(err);
+    };
+    if(this._status === 'rejected'){
+        let _isPromise = onRejected(this._reason);
         if(_isPromise instanceof _Promise){
             return _isPromise;
         };
         return this;
+    };
+    if(this._status === 'pending'){
+        this._onFulfilledCbs.push(onFulfilled);
+        this._onRejectedCbs.push(onRejected);
     }
-}
+};
+
+_Promise.prototype.catch = function(onRejected){
+    if(this._status === 'fullfilled'){
+        return;
+    };
+    if(this._status === 'rejected'){
+        onRejected(this._reason);
+    };
+    if(this._status === 'pending'){
+        this._onRejectedCbs.push(onRejected);
+    }
+};
+```
+
+
+
+# Promise--3
+
+[参考链接](https://www.cnblogs.com/samsara-yx/p/12217818.html)
+
+```javascript
+class _Promise{
+    constructor(handler){
+        //判断参数是否为函数
+        if(typeof handler !== 'function'){
+            throw new TypeError(`${handler} is not a function`)
+        };
+        this.initValue();//初始化值
+        this.bindThis();//绑定this
+
+        try{
+            handler(this.resolver,this.reject);
+        }catch(e){
+            this.reject(error);
+        };
+    }
+    bindThis(){
+        this.resolver = this.resolver.bind(this);
+        this.reject = this.reject.bind(this);
+    };
+    initValue(){
+        this.state = 'pending';
+        this.value = null;
+        this.reason = null;
+        this.onFulfilledCbs = [];
+        this.onRejectedCbs = [];
+    };
+
+    resolve(value){
+        if(this.state === 'pending'){
+            this.state = 'fulfilled';
+            this.value = value;
+            //resolve成功执行
+            this.onFulfilledCbs.forEach(fn=>fn(this.,value));
+        }
+    };
+    reject(reason){
+        if(this.state === 'pending'){
+            this.state = 'rejected');
+            this.reason = reason;
+            this.onRejectedCbs.forEach(fn => fn(this.reason));
+        }
+    };
+    then(onFulfilled,onRejected){
+        if(typeof onFulfilled !== 'function'){
+            onFulfilled = function(value){
+                return value;
+            }
+        };
+        if(typeof onRejected !== 'function'){
+            onRejected = function(reason){
+                return reason;
+            }
+        };
+
+        if(this.state === 'fulfilled'){
+            //模拟异步
+            setTimeout(()=>{
+                onFulfilled(this.value);
+            })
+        };
+        if(this.state === 'reject'){
+            setTimeout(()=>{
+                onRejected(this.reason);
+            })
+        };
+
+        let promise2 = new _Promise((resolve,reject)=>{
+            if(this.state === 'fulfilled'){
+                setTimeout(()=>{
+                    try{
+                        const data = onFulfilled(this.value);
+                        _Promise.resolvePromise(promise2,data,resolve,reject);
+                    }catch(e){
+                        reject(e);
+                    }
+                })
+            };
+            if(this.state === 'rejected'){
+                setTimeout(()=>{
+                    try{
+                        const data = onRejected(this.reason);
+                        _Promise.resolvePromise(promise2,data,resolve,reject);
+                    }catch(e){
+                        reject(e);
+                    }
+                })
+            };
+            if(this.state === 'pending'){
+                this.onFulfilledCbs.push(value=>{
+                    setTimeout(()=>{
+                        try{
+                            const data = onFulfilled(value);
+                            _Promise.resolvePromise(promise2,data,resolve,reject);
+                        }catch(e){
+                            reject(e);
+                        }
+                    })
+                });
+                this.onRejectedCbs.push(reason=>{
+                    setTimeout(()=>{
+                        try{
+                            const data = onRejected(reason);
+                            _Promise.resolvePromise(promise2,data,resolve,reject);
+                        }catch(e){
+                            reject(e);
+                        }
+                    })
+                })
+            }
+        });
+        return promise2;
+    };
+};
+
+_Promise.resolvePromise = function(promise2,data,resolve,reject){
+    //data与promise相等
+    if(promise2 === data){
+        reject(new TypeErroe('Chaining cycle detected for promise'))
+    };
+
+    let flag = false;
+    if(data instanceof _Promise){
+        //判断data为Promise
+        data.then(
+            value=>{
+                _Promise.resolvePromise(promise2,value,resolve,reject);
+            },
+            reason=>{
+                reject(reason)
+            }
+        )
+    } else if(data !==null && (typeof data === 'object' || typeof data === 'function')){
+        //data为函数或对象
+        try{
+            const then = date.then;
+            if(typeof then === 'function'){
+                then.call(
+                    data,
+                    value =>{
+                        if(flag) return;
+                        flag = true;
+                        _Promise.resolvePromise(promise2,value,resolve,reject)
+                    },
+                    reason =>{
+                        if(flag) return;
+                        flag = true;
+                        reject(reason);
+                    }
+                )
+            } else {
+                if (flag) return;
+                flag = true;
+                resolve(data);
+            }
+        }catch(e){
+            if(flag) return;
+            flag = true;
+            reject(e);
+        }
+    }else{
+        resolve(data);
+    }
+};
+```
+
+```javascript
+new _Promise((resolve, reject) => {
+    setTimeout(() => {
+        resolve(1234567)
+    }, 1000);
+}).then((value) => {
+    console.log(value, 'value')
+    return 11111
+}, (reason) => {
+    console.log(reason, 'reason')
+}).then((res) => {
+    console.log(res, 'res')
+})
 ```
 
