@@ -155,6 +155,8 @@ _Promise.prototype.catch = function(onRejected){
 
 [参考链接](https://www.cnblogs.com/samsara-yx/p/12217818.html)
 
+[参考链接2](https://juejin.im/post/6844904088963022856#heading-0)
+
 ```javascript
 class _Promise{
     constructor(handler){
@@ -184,6 +186,13 @@ class _Promise{
     };
 
     resolve(value){
+        //若value也是一个promise
+        ////resolve和reject都是当前promise的， 递归解析直到是普通值, 这里的resolve,reject都取的到，因为resolve的执行是在这两个函数执行之后，这里递归是防止value也是一个promise
+        if(value instanceof Promise){
+            value.then(resolve,reject);
+            return;
+        };
+        
         if(this.state === 'pending'){
             this.state = 'fulfilled';
             this.value = value;
@@ -198,6 +207,12 @@ class _Promise{
             this.onRejectedCbs.forEach(fn => fn(this.reason));
         }
     };
+/**
+ * [注册fulfilled状态/rejected状态对应的回调函数]
+ * @param  {function} onFulfilled fulfilled状态时 执行的函数
+ * @param  {function} onRejected  rejected状态时 执行的函数
+ * @return {function} newPromsie  返回一个新的promise对象
+ */
     then(onFulfilled,onRejected){
         if(typeof onFulfilled !== 'function'){
             onFulfilled = function(value){
@@ -244,20 +259,20 @@ class _Promise{
                 })
             };
             if(this.state === 'pending'){
-                this.onFulfilledCbs.push(value=>{
+                this.onFulfilledCbs.push(()=>{
                     setTimeout(()=>{
                         try{
-                            const data = onFulfilled(value);
+                            const data = onFulfilled(this.value);
                             _Promise.resolvePromise(promise2,data,resolve,reject);
                         }catch(e){
                             reject(e);
                         }
                     })
                 });
-                this.onRejectedCbs.push(reason=>{
+                this.onRejectedCbs.push(()=>{
                     setTimeout(()=>{
                         try{
-                            const data = onRejected(reason);
+                            const data = onRejected(this.reason);
                             _Promise.resolvePromise(promise2,data,resolve,reject);
                         }catch(e){
                             reject(e);
@@ -268,30 +283,52 @@ class _Promise{
         });
         return promise2;
     };
+    //catch相当于没有成功回调的then方法
+    catch(errCallBack){
+        return this.then(null,errCallback);
+    }
 };
-
+/**
+ * resolve中的值几种情况：
+ * 1.普通值
+ * 2.promise对象
+ * 3.thenable对象/函数
+ */
+/**
+ * 对resolve 进行改造增强 针对resolve中不同值情况 进行处理
+ * @param  {promise} promise2 promise1.then方法返回的新的promise对象
+ * @param  {[type]} x         promise1中onFulfilled/onRejected的返回值
+ * @param  {[type]} resolve   promise2的resolve方法
+ * @param  {[type]} reject    promise2的reject方法
+ */
 _Promise.resolvePromise = function(promise2,data,resolve,reject){
-    //data与promise相等
+    //data与promise相等，会导致循环引用报错
     if(promise2 === data){
         reject(new TypeErroe('Chaining cycle detected for promise'))
     };
 
-    let flag = false;
+    let flag = false; //避免多次调用
+    //判断data是否为_Promise对象
     if(data instanceof _Promise){
-        //判断data为Promise
-        data.then(
-            value=>{
-                _Promise.resolvePromise(promise2,value,resolve,reject);
-            },
-            reason=>{
-                reject(reason)
-            }
-        )
+        if(data.status === 'pending'){
+            //若为pending需要等待data被执行或拒绝，并解析value
+            data.then(
+                value=>{
+                    _Promise.resolvePromise(promise2,value,resolve,reject);
+                },
+                reason=>{
+                    reject(reason)
+                }
+            )
+        }else{
+            //若data已经处于fulfilled或者reject，则用相同值执行传递promise
+            data.then(resolve,reject);
+        }
     } else if(data !==null && (typeof data === 'object' || typeof data === 'function')){
         //data为函数或对象
         try{
             const then = date.then;
-            if(typeof then === 'function'){
+            if(typeof then === 'function'){ //判断是否为thenable对象
                 then.call(
                     data,
                     value =>{
