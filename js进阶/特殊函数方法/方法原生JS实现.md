@@ -17,141 +17,7 @@ let newMethod = function (Parent, ...rest) {
 
 [参考链接](https://mp.weixin.qq.com/s/ek41c2qoWg7WCCNyVvd2eA)
 
-```javascript
-function Promise(fn) {
-  // Promise resolve时的回调函数集
-  this.cbs = [];
-
-  // 传递给Promise处理函数的resolve
-  // 这里直接往实例上挂个data
-  // 然后把onResolvedCallback数组里的函数依次执行一遍就可以
-  const resolve = (value) => {
-    // 注意promise的then函数需要异步执行
-    setTimeout(() => {
-      this.data = value;
-      this.cbs.forEach((cb) => cb(value));
-    });
-  }
-
-  // 执行用户传入的函数 
-  // 并且把resolve方法交给用户执行
-  fn(resolve.bind(this));
-}
-
-Promise.prototype.then = function (onResolved) {
-  // 这里叫做promise2
-  return new Promise((resolve) => {
-    this.cbs.push(() => {
-        //onResolved对应then传入函数
-      const res = onResolved(this.data);
-      if (res instanceof Promise) {
-        // resolve的权力被交给了user promise
-        res.then(resolve);
-      } else {
-        // 如果是普通值 就直接resolve
-        // 依次执行cbs里的函数 并且把值传递给cbs
-        resolve(res);
-      }
-    });
-  });
-};
-```
-
-实例：
-
-```javascript
-const fn = (resolve) => {
-  setTimeout(() => {
-    resolve(1);
-  }, 500);
-};
-
-const promise1 = new Promise(fn);
-
-promise1.then((res) => {
-  console.log(res);
-  // user promise
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(2);
-    }, 500);
-  });
-});
-```
-
-
-
-# Promise --2
-
 [参考链接](https://blog.csdn.net/qq_41672008/article/details/100639104)
-
-```javascript
-function _Promise(executor){
-    this._status = 'pending';
-    this._value = undefined;
-    this._reason = undefined;
-    this._onFulfilledCbs = [];
-    this._onRejectedCbs = [];
-    
-    try{
-        executor(this.resolve.bind(this),this.reject.bind(this));
-    }catch(e){
-        this.reject(e);
-    }
-};
-_Promise.prototype.resolve = function(value){
-    if(this._status === 'pending'){
-        this._status = 'fullfilled';
-        this._value = value;
-        this._onFulfilledCbs.forEach(fn => fn(this._value));
-    }
-};
-
-_Promise.prototype.reject = function(reason){
-    if(this._status === 'pending'){
-        this._status = 'rejected';
-        this._reason = reason;
-        this._onRejectedCbs.forEach(fn => fn(this._reason));
-    }
-};
-
-_Promise.prototype.then = function(onFulfilled,onRejected){
-    if(this._status === 'fullfilled'){
-        let _isPromise = onFulfilled(this._value);
-        if(_isPromise instanceof _Promise){
-            return _isPromise;
-        };
-        return this;
-    };
-    if(this._status === 'rejected'){
-        let _isPromise = onRejected(this._reason);
-        if(_isPromise instanceof _Promise){
-            return _isPromise;
-        };
-        return this;
-    };
-    if(this._status === 'pending'){
-        this._onFulfilledCbs.push(onFulfilled);
-        this._onRejectedCbs.push(onRejected);
-    }
-};
-
-_Promise.prototype.catch = function(onRejected){
-    if(this._status === 'fullfilled'){
-        return;
-    };
-    if(this._status === 'rejected'){
-        onRejected(this._reason);
-    };
-    if(this._status === 'pending'){
-        this._onRejectedCbs.push(onRejected);
-    }
-};
-```
-
-
-
-# Promise--3
 
 [参考链接](https://www.cnblogs.com/samsara-yx/p/12217818.html)
 
@@ -371,5 +237,63 @@ new _Promise((resolve, reject) => {
 }).then((res) => {
     console.log(res, 'res')
 })
+```
+
+
+
+# Promise.all
+
+```javascript
+/**
+ * Promise.all Promise进行并行处理
+ * 参数: promise对象组成的数组作为参数
+ * 返回值: 返回一个Promise实例
+ * 当这个数组里的所有promise对象全部进入FulFilled状态的时候，才会resolve。
+ */
+Promise.all = function(promises) {
+    if(!Array.isArray(promises)){
+        throw new Error("promises must be an array")
+    }
+    return new Promise((resolve, reject) => {
+        let values = []
+        let count = 0
+        promises.forEach((promise, index) => {
+            promise.then(value => {
+                console.log('value:', value, 'index:', index)
+                values[index] = value
+                count++
+                if (count === promises.length) {
+                    resolve(values)
+                }
+            }, reason=>{
+                reject(reason);
+            })
+        })
+    })
+}
+```
+
+
+
+# Promise.race
+
+```javascript
+/**
+ * Promise.race
+ * 参数: 接收 promise对象组成的数组作为参数
+ * 返回值: 返回一个Promise实例
+ * 只要有一个promise对象进入 FulFilled 或者 Rejected 状态的话，就会继续进行后面的处理(取决于哪一个更快)
+ */
+Promise.race = function(promises) {
+    return new Promise((resolve, reject) => {
+        promises.forEach((promise) => {
+            promise.then(res=>{
+                resolve(res);
+            }, reason=>{
+                reject(reason);
+            });
+        });
+    });
+}
 ```
 
