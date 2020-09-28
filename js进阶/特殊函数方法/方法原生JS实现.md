@@ -13,6 +13,18 @@ let newMethod = function (Parent, ...rest) {
 
 
 
+# Object.create()
+
+```javascript
+Object.create = target=>{
+    const F = function(){};
+    F.prototype = target;
+    return new F();
+}
+```
+
+
+
 # Promise
 
 [参考链接](https://mp.weixin.qq.com/s/ek41c2qoWg7WCCNyVvd2eA)
@@ -294,6 +306,20 @@ Promise.race = function(promises) {
             });
         });
     });
+}
+```
+
+
+
+# bind()
+
+```javascript
+Object.prototype.bind = function(context){
+    var self = this;
+    var args = [].slice.call(arguments,1);
+    return function(){
+        return self.apply(context,args)
+    }
 }
 ```
 

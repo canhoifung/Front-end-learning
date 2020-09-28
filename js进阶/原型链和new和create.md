@@ -40,6 +40,18 @@ let newMethod = function (Parent, ...rest) {
 
 
 
+# Object.create()
+
+将参数作为新对象的原型，并返回新对象
+
+```javascript
+Object.create = target=>{
+    const F = function(){}
+    F.prototype = target;
+    return new F();
+};
+```
+
 
 
 
