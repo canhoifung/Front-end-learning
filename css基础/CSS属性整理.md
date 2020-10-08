@@ -1,4 +1,4 @@
-导入CSS方法
+# 导入CSS方法
 
 1. `<link rel="stylesheet" type="text/css" href="sheet1.css">`
 2. `<style type='text/css'> @import url(sheet2.css) </style>`
@@ -39,7 +39,14 @@
 
 # 布局
 
-`display`：inline | block | inline-block
+`display`：
+
++ `<display-outside>`：block | inline | run-in
++ `<display-indside>`：flow | flow-root | table | flex | grid | ruby
++ `<display-listitem>`：list-item | `<display-outside>` | flow | flow-root
++ `<display-internal>`：table-row-group | table-header-group | table-footer-group | table-row | table-cell | table-column-group | table-column | table-caption | ruby-case | ruby-text | ruby-base-container | ruby-text-container
++ `<display-box>`：contents | none
++ `<display-legacy>`：inline-clock | inline-list-item | inline-table | inline-flex | inline-grid
 
 # 选择器
 
@@ -75,13 +82,22 @@ id选择器：`#testid`
 
     如：`<h1 foo="test bar">`
 
-  + 带有对应属性且属性内容开头为对应单词且后接一个短线（U+002D）或属性内容就是对应单词：`[foo&#124;="bar"]`
+  + 带有对应属性且属性内容开头为对应单词且后接一个短线（U+002D）或属性内容就是对应单词：`[foo|="bar"]`
 
     如：`<h1 foo="bar-test">`或`<h1 foo="bar">`
+    
+  + 忽略大小写：`[foo='bar' i]`
 
-+ 头值属性选择器：
+    如：`<h1 foo="BaR">`
 
 
+后代选择器：`div p`
+
+子代选择器：`div>p`
+
+紧邻兄弟选择器：`h1+p`
+
+兄弟选择器：`h1~p`
 
 
 
