@@ -99,7 +99,55 @@ id选择器：`#testid`
 
 兄弟选择器：`h1~p`
 
+伪类选择器：
 
++ 根元素选择器：`:root`
++ 空元素选择器：`p:empty`
++ 唯一子元素选择器：`img:only-child`
++ 兄弟唯一元素类型选择器：`img:only-of-type`
++ 选择第一个子元素：`p:first-child`
++ 选择最后一个子元素：`p:last-child`
++ 选择第一个特定类型的元素：`p:first-of-type`
++ 选择最后一个特定类型的元素：`p:last-of-type`
++ 选择第n个元素：`p:nth-child(n)`
+  + 选择偶数行个元素：`p:nth-child(even)`===`p:nth-child(2n)`
+  + 选择奇数行个元素：`p:nth-child(odd)`===`p:nth-child(2n-1)`
++ 倒数开始选择第n个元素：`p:nth-last-child(n)`
++ 选择第n个特定类型的元素：`p:nth-of-type(n)`、`p:nth-last-of-type(n)`
++ UI状态伪类：
+  + 可用：`p:enabled`
+  + 禁用：`p:disabled`
+  + 选中：`input:checked`
+  + 未选中：`input:not(:checked)`
+  + 非checked或unchecked由DOM脚本或用户代理设置的未选中或取消选中：`input:indeterminate`
+  + 初始选中：`input:default`
+  + 必填项：`input:required`
+  + 非必填项：`input:optional`
+  + 数据合法：`input:valid`
+  + 数据非法：`input:invalid`
+  + 数据处于min和max内：`input:in-range`
+  + 数据超出min或max：`input:out-of-range`
+  + 可读写：`input:read-write`
+  + 非可读写：`input:read-only`
++ 选择锚点元素：`p:target`
++ 选择特定语言规则元素：`p:lang(no)`
++ 否定选择器：`:not()`
+
+伪元素选择器：
+
++ 选择元素的第一个字母：`p::first-letter`
++ 选择元素的第一行：`p::first-line`
++ 选择元素前：`p::before`
++ 选择元素后：`p::after`
+
+# 优先级
+
+每个CSS优先级可以视为`‘0,0,0,0’`
+
++ 每个ID属性值，添加`0,1,0,0`
++ 每个类属性值、属性选择、伪类，添加`0,0,1,0`
++ 每个元素和伪元素，添加`0,0,0,1`
++ 组合和通用选择器不影响优先级
 
 
 

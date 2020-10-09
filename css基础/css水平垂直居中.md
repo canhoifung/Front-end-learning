@@ -34,7 +34,7 @@ margin:0 auto;   //  上下边距为0,左右边距相同
 </div>
 ```
 ## 方案三 使用flex布局
-待处理的块状元素的父元素添加属性 `display: flex;`` justify-content: center`
+待处理的块状元素的父元素添加属性 `display: flex; justify-content: center`
 ```html
 <style>
     #father {
@@ -55,8 +55,11 @@ margin:0 auto;   //  上下边距为0,左右边距相同
 </div>
 ```
 # 垂直居中
+
 ## 行内元素
+
 ### 单行行内元素
+
 行高等于盒子的高
 ```html
 <style>
@@ -94,7 +97,9 @@ margin:0 auto;   //  上下边距为0,左右边距相同
 </div>
 ```
 ## 块级元素
+
 ### 方案一 使用定位属性
+
 父元素为相对定位，再设置子元素为绝对定位，设置子元素的`top: 50%`，即让子元素的左上角垂直居中；
 1. 定高度,设置绝对子元素的 `margin-top: -元素高度的一半px;` 或者设置`transform: translateY(-50%);`
 2. 不定高度,设置`transform: translateY(-50%);`
@@ -215,6 +220,7 @@ margin:0 auto;   //  上下边距为0,左右边距相同
 </div>
 ```
 ### 方案二 使用flex布局
+
 设置父元素为flex定位，`justify-content: center; align-items: center;`
 ```html
 <style>
