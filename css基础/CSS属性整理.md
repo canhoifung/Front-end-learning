@@ -132,6 +132,12 @@ id选择器：`#testid`
 + 选择锚点元素：`p:target`
 + 选择特定语言规则元素：`p:lang(no)`
 + 否定选择器：`:not()`
++ 链接状态选择器：
+  + 未激活状态：`a:link`
+  + 点击后状态：`a:visited`
+  + 获得焦点状态：`a:focus`
+  + 悬停状态：`a:hover`
+  + 点击状态：`a:active`
 
 伪元素选择器：
 
@@ -142,16 +148,49 @@ id选择器：`#testid`
 
 # 优先级
 
-每个CSS优先级可以视为`‘0,0,0,0’`
+每个CSS优先级可以视为`0,0,0,0`
 
 + 每个ID属性值，添加`0,1,0,0`
 + 每个类属性值、属性选择、伪类，添加`0,0,1,0`
 + 每个元素和伪元素，添加`0,0,0,1`
 + 组合和通用选择器不影响优先级
++ 每个内联声明，添加`1,0,0,0`
++ `!important`最优先
 
+层叠样式表优先级：
 
++ author > reader > user agent
++ `!important`reader >> ererything
 
+# 属性值类型
 
++ Keywords
++ Global keywords：inherit | initial | unset | all
++ Strings：`<string>`
++ URLs：`url()`
++ Image：`<image>`
++ Identifiers
++ Numbers&Percentages:
+  + Integers：`<integer>`
+  + Numbers：`<number>`
+
+# 字体
+
+`@font-face{}`：
+
++ `font-family`：<string>
++ `src`：
+  + `local()`-可选
+  + `url()`-必须
+  + `format()`-可选
++ `unicode-range`
++ `font-weight` | ``font-style` | `font-stretch`
+
+`font-family`：serif | sans-serif | monospace | cursive | fantasy
+
+`font-weight`：100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 | lighter | normal | bold | bolder
+
+`font-size`：xx-samll | x-small | small | medium | large | x-large | xx-large | <length> | <percentage>
 
 
 
