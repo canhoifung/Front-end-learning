@@ -168,11 +168,15 @@ id选择器：`#testid`
 + Global keywords：inherit | initial | unset | all
 + Strings：`<string>`
 + URLs：`url()`
-+ Image：`<image>`
-+ Identifiers
-+ Numbers&Percentages:
-  + Integers：`<integer>`
-  + Numbers：`<number>`
++ Numbers
++ Percentage values
++ Frequencies：Hz | kHz
++ Times：s | ms
++ Angles：deg | grand | rad | turn
++ Length values：
+  + Absolute：in | cm | mm | pt | pc
+  + Relative：em | rem | ex | ch | px | vw | vh | wm
++ Color values：#RRGGBB | #RGB | rgb(rrr,ggg,bbb) | rgb(rrr.rr%,ggg.gg%,bbb.bb%) | rgba(rrr,ggg,bbb,a) | <keywords> | currentColor | transparent
 
 # 字体
 
@@ -184,13 +188,35 @@ id选择器：`#testid`
   + `url()`-必须
   + `format()`-可选
 + `unicode-range`
-+ `font-weight` | ``font-style` | `font-stretch`
++ `font-weight` | `font-style` | `font-stretch`
 
 `font-family`：serif | sans-serif | monospace | cursive | fantasy
 
 `font-weight`：100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 | lighter | normal | bold | bolder
 
 `font-size`：xx-samll | x-small | small | medium | large | x-large | xx-large | <length> | <percentage>
+
+# 文本
+
+`text-indent`：<length>
+
+`text-align`：left | right | center | start | end | justify | macth-parent 
+
+`text-align-last`：left | right | center | start | end | justify | macth-parent 
+
+`line-height`：<length> | <percentage> | <number> | normal | none
+
+`vertical-align`：balseline | sub | super | bottm | text-bottom | middle | top | text-top | <percentage> | <length>
+
+`word-spacing`：<length> | <percentage> | normal
+
+`letter-spacing`：<length> | <percentage> | normal
+
+`text-transform`：uppercase | lowercase | capitalize | none
+
+
+
+
 
 
 

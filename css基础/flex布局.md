@@ -104,7 +104,7 @@
       $$
       gWdith = basis+freeSpace*\frac{grow}{grow1+....+grown}*sumGrow
       $$
-      
+   
 3. `flex-shrink`且`sumShrink>=1`
       $$
       sWidth = basis+freeSpace*\frac{basis*shrink}{basis1*shrink1+...+basisn*shrinn}
@@ -113,18 +113,17 @@
    4. `flex-shrink`且`sumShrink<1`
    $$
       sWidth = basis+freeSpace*\frac{basis*shrink}{basis1*shrink1+...+basisn*shrinn}*sumShrink
-      $$
+   $$
    
    例子：
 
-   ```html
 <div class="box">
         <div></div>
         <div></div>
         <div></div>
    </div
    ```
-   
+
    ```css
 .box {
        display: flex;
@@ -151,7 +150,7 @@
        flex-shrink:3
    }
    ```
-   
+
    计算过程：
 
    freeSpace = 800 - （200 + 300 + 400）= -100；
@@ -189,7 +188,7 @@ div div:nth-child(1) {
        width: 400px;
    }
    ```
-   
+
    计算过程：
 
    space = 800 - （200 + 300 + 400）= -100；
@@ -199,13 +198,13 @@ div div:nth-child(1) {
    factor1 = 0.1 * 200 = 20;
 factor2 = 0.2 * 300 = 60;
    factor3 = 0.3 * 400 = 120;
-   
+
    sumFactor = 20 + 60 + 120 = 200;
 
    ratio1 = factor1 / 200 = 20 / 200 = 1/10;
 ratio2 = factor3 / 300 = 60 / 200 = 3/10;
    ratio3 = factor3 / 400 = 120 / 200 = 6/10;
-   
+
    item1 = 200 + (-100) * 0.6 * 1/10 = 200-6 = 194;
 
    item2 = 300 + (-100) * 0.6 * 3/10 = 300-18 = 282;
