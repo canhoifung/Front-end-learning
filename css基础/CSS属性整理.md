@@ -214,25 +214,33 @@ id选择器：`#testid`
 
 `text-transform`：uppercase | lowercase | capitalize | none
 
+`text-decoration`：underline | overline | line-through | blink | none
 
+`text-render`：optimizeSpeed | optimizeLegibility | geometricPrecision | auto
 
+`text-shadow`：<color> <horizontal offset> <vertical offset> <blur radius> | none
 
+`white-space`：normal | pre | nowrap | pre-warp | pre-line
 
+`tab-size`：<length> | <number>
 
+`hyphens`：none | manual | auto
 
+`work-break`：normal | break-all | keep-all
 
+`wrok-wrap`：normal | break-word     **相当于`overflow-wrap`**
 
+`line-break`：auto | loose | normal | strict | anywhere
 
+`overflow-wrap`：normal | break-word
 
+`writing-mode`：horizontal-tb | vertical-rl | vertical-lr | sideways-rl | sideways-lr
 
+`text-orientation`：mixed | upright | sideways-right | sideways | use-glyph-orientation
 
+`direction`：rtl | rtl
 
-
-
-
-
-
-
+`unicode-bidi`：normal | embed | bidi-override
 
 
 
