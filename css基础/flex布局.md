@@ -105,7 +105,7 @@
       gWdith = basis+freeSpace*\frac{grow}{grow1+....+grown}*sumGrow
       $$
    
-3. `flex-shrink`且`sumShrink>=1`
+   3. `flex-shrink`且`sumShrink>=1`
       $$
       sWidth = basis+freeSpace*\frac{basis*shrink}{basis1*shrink1+...+basisn*shrinn}
       $$
@@ -117,12 +117,13 @@
    
    例子：
 
+```html
 <div class="box">
-        <div></div>
-        <div></div>
-        <div></div>
-   </div
-   ```
+    <div></div>
+    <div></div>
+    <div></div>
+</div>
+```
 
    ```css
 .box {

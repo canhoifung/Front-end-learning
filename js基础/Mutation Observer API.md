@@ -142,7 +142,7 @@ mo.observe(element, options);
 
 由于网页加载的时候DOM节点生成会产生变动记录，因此观测DOM变动就可以触发相关事件，不需要DOMContentLoaded事件
 
-```
+```JavaScript
 var observer = new MutationObserver(callback);
 observer.observe(document.documentElement, {
   childList: true,
