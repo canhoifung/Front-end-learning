@@ -132,7 +132,7 @@ id选择器：`#testid`
 + 选择锚点元素：`p:target`
 + 选择特定语言规则元素：`p:lang(no)`
 + 否定选择器：`:not()`
-+ 链接状态选择器：
++ 动态伪类选择器：
   + 未激活状态：`a:link`
   + 点击后状态：`a:visited`
   + 获得焦点状态：`a:focus`
@@ -156,6 +156,7 @@ id选择器：`#testid`
 + 组合和通用选择器不影响优先级
 + 每个内联声明，添加`1,0,0,0`
 + `!important`最优先
++ 继承值无优先级
 
 层叠样式表优先级：
 
@@ -165,11 +166,12 @@ id选择器：`#testid`
 # 属性值类型
 
 + Keywords
-+ Global keywords：inherit | initial | unset | all
-+ Strings：`<string>`
++ Global keywords：inherit | initial | unset 
++ Strings：<string>
 + URLs：`url()`
-+ Numbers
-+ Percentage values
++ Images：<image>
++ 标识符：<identifier>
++ Numbers：<integer> | <number> | <percentage> | 
 + Frequencies：Hz | kHz
 + Times：s | ms
 + Angles：deg | grand | rad | turn
