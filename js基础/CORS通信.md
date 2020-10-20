@@ -44,7 +44,7 @@ User-Agent: Mozilla/5.0...
 
 若`Origin`指定的源不在许可范围内，服务器会返回一个正常的HTTP回应
 
-​	但这个回应头信息不会包含`Acces-Control-Allow-Origin`字段，浏览器会识别到这种情	况并抛出一个错误，被`XMLHttppRequest`的`onerror`回调函数捕捉
+​	但这个回应头信息不会包含`Acces-Control-Allow-Origin`字段，浏览器会识别到这种情况并抛出一个错误，被`XMLHttppRequest`的`onerror`回调函数捕捉
 
 ​	==这种错误的状态码可能是200，因此无法通过状态码识别错误==
 
