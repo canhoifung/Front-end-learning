@@ -172,13 +172,13 @@ id选择器：`#testid`
 + Images：<image>
 + 标识符：<identifier>
 + Numbers：<integer> | <number> | <percentage> | 
-+ Frequencies：Hz | kHz
-+ Times：s | ms
-+ Angles：deg | grand | rad | turn
++ Frequencies：<number> + [ Hz | kHz ]
++ Times：<number> + [ s | ms ]
++ Angles：<number> + [ deg | grad | rad | turn ]
 + Length values：
   + Absolute：in | cm | mm | pt | pc
   + Relative：em | rem | ex | ch | px | vw | vh | wm
-+ Color values：#RRGGBB | #RGB | rgb(rrr,ggg,bbb) | rgb(rrr.rr%,ggg.gg%,bbb.bb%) | rgba(rrr,ggg,bbb,a) | <keywords> | currentColor | transparent
++ Color values：#RRGGBB | #RGB | rgb(rrr,ggg,bbb) | rgb(rrr.rr%,ggg.gg%,bbb.bb%) | rgba(rrr,ggg,bbb,a) | <keywords> | currentColor | transparent | hsl(h,s,l)
 
 # 字体
 
@@ -190,7 +190,7 @@ id选择器：`#testid`
   + `url()`-必须
   + `format()`-可选
 + `unicode-range`
-+ `font-weight` | `font-style` | `font-stretch`
++ `font-weight` | `font-style` | `font-stretch` | `font-variant` 
 
 `font-family`：serif | sans-serif | monospace | cursive | fantasy
 
