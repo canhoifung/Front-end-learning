@@ -311,15 +311,54 @@ Promise.race = function(promises) {
 
 
 
+# call()
+
+```javascript
+Function.prototype.call = function(context,...args){
+    //确保函数在上下文环境中执行
+    context = context instanceof Object ? context : {};
+    context.fn = this;
+    const result = context.fn(...args);
+    //call不能污染上下文，因此要删掉
+    delete context.fn;
+    return result;
+}
+```
+
+
+
+# apply()
+
+```javascript
+Function.prototype.apply = function(context,args){
+    context instanceof Object ? context : {};
+    context.fn = this;
+    const result = args?context.fn(...args):context.fn();
+    delete context.fn;
+    return result;
+}
+```
+
+
+
 # bind()
 
 ```javascript
-Object.prototype.bind = function(context){
-    var self = this;
-    var args = [].slice.call(arguments,1);
-    return function(){
-        return self.apply(context,args)
-    }
+Function.prototype.bind = function(context=window){
+    if(typeof this !== 'function') throw Error(
+    'not a function');
+    const self = this;
+    const args = [...arguments].slice(1);
+    //考虑实例化后对原型链的影响
+    const temp = function(){};
+    const resFn = function(){
+        //判断是否使用了new
+        return self.apply(this instanceof resFn ? this : context,[...args,...arguments])
+    };
+    
+    temp.prototype = this.prototype;
+    resFn.prototype = new temp();
+    return resFn;
 }
 ```
 
