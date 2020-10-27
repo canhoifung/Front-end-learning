@@ -198,21 +198,37 @@ id选择器：`#testid`
 
 `font-size`：xx-samll | x-small | small | medium | large | x-large | xx-large | <length> | <percentage>
 
+`font-size-adjust`：<number> | none | auto
+
+`font-style`：normal | italic | oblique
+
+`font-stretch`：normal | ultra-condensed | extra-condensed | condensed | semi-condensed | semi-expanded | expanded | extra-expanded | ultra-expanded 
+
+`font-kerning`：auto | normal | none
+
+`font-variant`：normal | small-caps
+
+`font-feature-settings`：normal | <feature-tag-value>
+
+`font-synthesis`：none | [weight || style] | weight style 
+
+`font`：[`font-style` || `font-weight` || `font-variant`] `font-size` `font-family`
+
 # 文本
 
-`text-indent`：<length>
+`text-indent`：<length> | <percentage>
 
 `text-align`：left | right | center | start | end | justify | macth-parent 
 
-`text-align-last`：left | right | center | start | end | justify | macth-parent 
+`text-align-last`：auto | left | right | center | start | end | justify  
 
-`line-height`：<length> | <percentage> | <number> | normal | none
+`line-height`：<length> | <percentage> | <number> | normal 
 
 `vertical-align`：balseline | sub | super | bottm | text-bottom | middle | top | text-top | <percentage> | <length>
 
-`word-spacing`：<length> | <percentage> | normal
+`word-spacing`：<length>  | normal
 
-`letter-spacing`：<length> | <percentage> | normal
+`letter-spacing`：<length>  | normal
 
 `text-transform`：uppercase | lowercase | capitalize | none
 
