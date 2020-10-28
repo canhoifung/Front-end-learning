@@ -331,7 +331,7 @@ Function.prototype.call = function(context,...args){
 
 ```javascript
 Function.prototype.apply = function(context,args){
-    context instanceof Object ? context : {};
+    context = context instanceof Object ? context : {};
     context.fn = this;
     const result = args?context.fn(...args):context.fn();
     delete context.fn;
@@ -345,20 +345,40 @@ Function.prototype.apply = function(context,args){
 
 ```javascript
 Function.prototype.bind = function(context=window){
+    //调用bind的一定要是一个函数
     if(typeof this !== 'function') throw Error(
     'not a function');
     const self = this;
     const args = [...arguments].slice(1);
-    //考虑实例化后对原型链的影响
+    
     const temp = function(){};
     const resFn = function(){
+        const innerArgs = [...arguments].slice(1);
+        const finalArgs = args.concat(innerArgs);
         //判断是否使用了new
-        return self.apply(this instanceof resFn ? this : context,[...args,...arguments])
+        //若返回函数作为构造函数搭配了new关键字，绑定的this就要被忽略
+        return self.apply(this instanceof temp ? this : context,finalArgs)
     };
-    
+    //考虑实例化后对原型链的影响
     temp.prototype = this.prototype;
     resFn.prototype = new temp();
     return resFn;
+}
+```
+
+
+
+# instanceof
+
+```javascript
+function instance_of(L,R){
+    const O = R.prototype;
+    L = L.__proto__;
+    while(true){
+        if(L === null)return false;
+        if(L === O)return true;
+        L = L.__proto__;
+    }
 }
 ```
 

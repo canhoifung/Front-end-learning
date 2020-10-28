@@ -11,7 +11,9 @@
 
 2. ==所有对象==都有`__proto__`，指向构造函数的==原型对象==
 
-3. `Object.create()`是以参数对象作为新对象的`__proto__`
+3. ==只有对象==才有`__proto__`和`constructor`
+
+4. `Object.create()`是以参数对象作为新对象的`__proto__`
 
 ![img](../JS疑难杂症.assets/13902845-babea8f0cde0d791.webp)
 
