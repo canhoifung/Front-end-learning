@@ -37,17 +37,6 @@
 
 特性查询逻辑关键字：and | not | or
 
-# 布局
-
-`display`：
-
-+ `<display-outside>`：block | inline | run-in
-+ `<display-indside>`：flow | flow-root | table | flex | grid | ruby
-+ `<display-listitem>`：list-item | `<display-outside>` | flow | flow-root
-+ `<display-internal>`：table-row-group | table-header-group | table-footer-group | table-row | table-cell | table-column-group | table-column | table-caption | ruby-case | ruby-text | ruby-base-container | ruby-text-container
-+ `<display-box>`：contents | none
-+ `<display-legacy>`：inline-clock | inline-list-item | inline-table | inline-flex | inline-grid
-
 # 选择器
 
 分组选择器：`div,p`
@@ -224,7 +213,7 @@ id选择器：`#testid`
 
 `line-height`：<length> | <percentage> | <number> | normal 
 
-`vertical-align`：balseline | sub | super | bottm | text-bottom | middle | top | text-top | <percentage> | <length>
+`vertical-align`：balseline | sub | super | bottom | text-bottom | middle | top | text-top | <percentage> | <length>
 
 `word-spacing`：<length>  | normal
 
@@ -244,43 +233,133 @@ id选择器：`#testid`
 
 `hyphens`：none | manual | auto
 
-`work-break`：normal | break-all | keep-all
+`word-break`：normal | break-all | keep-all
 
-`wrok-wrap`：normal | break-word     **相当于`overflow-wrap`**
+`word-wrap`：normal | break-word     **相当于`overflow-wrap`**
 
 `line-break`：auto | loose | normal | strict | anywhere
 
 `overflow-wrap`：normal | break-word
 
-`writing-mode`：horizontal-tb | vertical-rl | vertical-lr | sideways-rl | sideways-lr
+`writing-mode`：horizontal-tb | vertical-rl | vertical-lr 
 
-`text-orientation`：mixed | upright | sideways-right | sideways | use-glyph-orientation
+`text-orientation`：mixed | upright  | sideways 
 
-`direction`：rtl | rtl
+`direction`：rtl | ltr
 
 `unicode-bidi`：normal | embed | bidi-override
 
+# 视觉格式化
+
+`display`：
+
++ `<display-outside>`：block | inline | run-in
++ `<display-indside>`：flow | flow-root | table | flex | grid | ruby
++ `<display-listitem>`：list-item | `<display-outside>` | flow | flow-root
++ `<display-internal>`：table-row-group | table-header-group | table-footer-group | table-row | table-cell | table-column-group | table-column | table-caption | ruby-case | ruby-text | ruby-base-container | ruby-text-container
++ `<display-box>`：contents | none
++ `<display-legacy>`：inline-clock | inline-list-item | inline-table | inline-flex | inline-grid
+
+`box-sizing`：content-box | padding-box | border-box
+
+横向格式化属性：
+
++ content-box下：
+  + margin-left + border-left + padding-left + width + padding-right + border-right + margin-right = 父元素width
++ margin：auto | length
++ padding ： 0 | length
++ width： auto | length
++ border： 0 | length
+
+`box-decoration-break`：slice | clone
+
+# 内边距、边框、轮廓、外边距
+
+`width`：<length> | <percentage> | auto
+
+`height`：<length> | <percentage> | auto
 
 
 
+`padding`：<length> | <percentage>
+
+`padding-top`、`padding-right`、`padding-bottom`、`padding-left`：<length> | <percentage>
 
 
 
+`border-style`：none | hidden | solid | dotted | dashed | double | groove | ridge | inset | outset
+
+`border-top-style`、`border-right-style`、`border-bottom-style`、`border-left-style`：
+
+`boder-width`：thin | medium | thick | <length
+
+`border-top-width`、`border-right-width`、`border-bottom-width`、`border-left-width`：
+
+`border-color`：<color> | transparent
+
+`border-top-color`、`border-right-color`、`border-bottom-color`、`border-left-color`：
+
+`border-top`、`border-right`、``border-bottom`、`border-left`：[<border-width> || <border-style> || <border-color>]
+
+`border`：[<border-width> || <border-style> || <border-color>]
+
+`border-radius`：[<length> | <percentage>]{1,4}
+
+`border-top-radius`、`border-right-radius`、`border-bottom-radius`、`border-left-radius`：[<length> | <percentage>]{1,2}
+
+`border-image-source`：none | <image>
+
+`border-image-slice`：[<number> | <percentage>]{1,4} && fill?
+
+`border-image-width`：[<length> | <percentage> | <number> | auto]{1,4}
+
+`border-image-outset`：[<length> | <number>]{1,4}
+
+`border-image-repeat`：[stretch | repeat | round | space]{1,2}
+
+`border-image`：<border-image-source> || <border-image-slice> [ / <border-image-width> | / <border-image-outset> ] ? || <border-image-repeat>
 
 
 
+`outline-style`：auto | none | solid | dotted | dashed | double | groove | ridge | inset | outset
+
+`outline-width`：<length> | thin | medium | thick
+
+`outline-color`：<color> | invert
+
+`outline`：[<outline-color> || <outline-style> || <outline-width>]
 
 
 
+`margin`：[<length> | <percentage> | auto]{1,4}
 
+`margin-top`、`margin-right`、``margin-bottom`、`margin-left`：
 
+# 颜色、背景和渐变
 
+`color`：<color>
 
+`background-color`：<color>
 
+`background-clip`：border-box | padding-box | content-box | text
 
+`background-image`：<image> | none
 
+`background-position`：<position>
 
+`background-origin`：border-box | padding-box | content-box
 
+`background-repeat`：repeat-x | repeat-y | repeat | space | round | no-repeat
+
+`background-attachment`：scroll | fixed | local
+
+`background-size`：<length> | <percentage> | auto | cover | contain
+
+`background`
+
+`background-image`：linear-gradient( [ [ <angle> | to <side-or-quadrant> ] , ]?  [ <color-stop> [ , <color-hint>] ? ] # , <color-stop>)
+
+<color-stop>：<color> [ <length> | <percentage> ]?
 
 
 
