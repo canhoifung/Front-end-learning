@@ -347,10 +347,10 @@ Function.prototype.apply = function(context,args){
 Function.prototype.bind = function(context=window){
     //调用bind的一定要是一个函数
     if(typeof this !== 'function') throw Error(
-    'not a function');
+        'not a function');
     const self = this;
     const args = [...arguments].slice(1);
-    
+
     const temp = function(){};
     const resFn = function(){
         const innerArgs = [...arguments].slice(1);
@@ -359,7 +359,7 @@ Function.prototype.bind = function(context=window){
         //若返回函数作为构造函数搭配了new关键字，绑定的this就要被忽略
         return self.apply(this instanceof temp ? this : context,finalArgs)
     };
-    //考虑实例化后对原型链的影响
+    //考虑实例化后对原型链的影响，等同执行了resFn.prototype = Object.create(this.prototype);
     temp.prototype = this.prototype;
     resFn.prototype = new temp();
     return resFn;

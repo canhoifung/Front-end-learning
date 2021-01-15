@@ -1,7 +1,8 @@
 //用于测试data
+
 let vueData = new Vue({
     el: "#vueData",
-    template:`
+    template: `
     <div>
         <ul>
             <li v-for="(val,key) in dataTest">{{key}}：{{val}}</li>
@@ -16,20 +17,24 @@ let vueData = new Vue({
         //Object.assign({},this.someobject,newObject)
         //对Array而言所有会修改原数组的方法都可以，直接用index来修改或改length就不行
         //不能直接对根data添加数据
-        fruit:"banana",
-        text:"data数据添加测试",
-        count:1,
-        obj:{newKey:"oldValue"},
-    },
-    computed:{
-        dataTest:function(){return this.$data}
-    },
-    methods:{
-        VueSetClick(){
-            Vue.set(vueData.obj,"newKey","newValue")
+        fruit: "banana",
+        text: "data数据添加测试",
+        count: 1,
+        obj: {
+            newKey: "oldValue"
         },
-        thisSetClick(){
-            this.$set(this.obj,"new-set-key","new-set-value")
+    },
+    computed: {
+        dataTest: function () {
+            return this.$data
+        }
+    },
+    methods: {
+        VueSetClick() {
+            Vue.set(vueData.obj, "newKey", "newValue")
+        },
+        thisSetClick() {
+            this.$set(this.obj, "new-set-key", "new-set-value")
         }
     }
 })
@@ -48,45 +53,45 @@ let vueLifeCycle = new Vue({
         <button @click="changeContrl">切换组件v-if</button>
     </div>
     `,
-    data:{
-        text:"this is template test",
-        bool:false,
-        control:true,
+    data: {
+        text: "this is template test",
+        bool: false,
+        control: true,
     },
-    methods:{
-        changeH1(){
-            this.text="这是船新的标题内容";
-            this.bool=true;
+    methods: {
+        changeH1() {
+            this.text = "这是船新的标题内容";
+            this.bool = true;
         },
-        changeContrl(){
-            this.control=this.control?false:true;
+        changeContrl() {
+            this.control = this.control ? false : true;
         },
     },
-    beforeCreate(){
+    beforeCreate() {
         console.log("lifeCycle beforeCreate")
     },
-    created(){
+    created() {
         console.log("lifeCycle created");
         //created阶段无法获取到vm.$el
     },
-    beforeMount(){
+    beforeMount() {
         console.log("lifeCycle beforeMount");
         //开始首次调用render
     },
-    mounted(){
+    mounted() {
         console.log("lifeCycle mounted");
         //此时用vm.$el代替了el，可以获取vm.$el
         //但无法保证子组件也一起被挂载完成，若要实现效果，需要用this.$nextTick(function(){});
     },
-    beforeUpdate(){
+    beforeUpdate() {
         //数据更新了但是还没有渲染到视图层，如果这一步修改数据可能会导致无限循环
         console.log("lifeCycle beforeUpdate");
     },
-    updated(){
+    updated() {
         console.log("lifeCycle updated");
         //无法保证子组件也一起被挂载完成，若要实现效果，需要用this.$nextTick(function(){});
     },
-    activated(){
+    activated() {
         //被keep-alive缓存的组件再次被激活时
         console.log("lifeCycle activated");
     },
@@ -126,36 +131,36 @@ setTimeout(() => {
 
 
 //用于测试自定义指令：
-Vue.directive('mydirective',{
-    bind(el,binding,vnode){
+Vue.directive('mydirective', {
+    bind(el, binding, vnode) {
         console.log("我绑定元素了")
         var s = JSON.stringify
         el.innerHTML =
-          'name: '       + s(binding.name) + '<br>' + //指令命
-          'value: '      + s(binding.value) + '<br>' + //绑定值
-          'expression: ' + s(binding.expression) + '<br>' + //绑定的前一个值，只在update和componentUpdated中可用
-          'argument: '   + s(binding.arg) + '<br>' + //传给指令的参数
-          'modifiers: '  + s(binding.modifiers) + '<br>' + //包含修饰符的对象
-          'vnode keys: ' + Object.keys(vnode).join(', ') + '<br>' //Vue编译生成的虚拟节点
+            'name: ' + s(binding.name) + '<br>' + //指令命
+            'value: ' + s(binding.value) + '<br>' + //绑定值
+            'expression: ' + s(binding.expression) + '<br>' + //绑定的前一个值，只在update和componentUpdated中可用
+            'argument: ' + s(binding.arg) + '<br>' + //传给指令的参数
+            'modifiers: ' + s(binding.modifiers) + '<br>' + //包含修饰符的对象
+            'vnode keys: ' + Object.keys(vnode).join(', ') + '<br>' //Vue编译生成的虚拟节点
     },
-    inserted(el,binding,vnode){
+    inserted(el, binding, vnode) {
         console.log("我绑定的元素被插入父节点了")
     },
-    update(el,binding,vnode,oldnode){
+    update(el, binding, vnode, oldnode) {
         //其子Node可能更新了也可能没有
         console.log("我所在的VNode更新了")
     },
-    componentUpdated(el,binding,vnode,oldnode){
+    componentUpdated(el, binding, vnode, oldnode) {
         console.log("我所在的VNode和子Node全部更新完了")
     },
-    unbind(el,binding,vnode){
+    unbind(el, binding, vnode) {
         console.log("我被解绑了")
     },
 })
 let myDirective = new Vue({
-    el:"#directiveTest",
-    data:{
-        message:"对应绑定的value",
-        control:true,
+    el: "#directiveTest",
+    data: {
+        message: "对应绑定的value",
+        control: true,
     }
 })
