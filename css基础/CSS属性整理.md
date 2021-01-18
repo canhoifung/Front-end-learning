@@ -361,9 +361,21 @@ id选择器：`#testid`
 
 <color-stop>：<color> [ <length> | <percentage> ]?
 
+`background-image`：radial-gradient( [ [ <shape> || <size> ] [ at <position> ] ? , [ at <position> , ] ? [ <cololr-stop> [ , <color-hint> ] ? ] [ , <color-stop> ] + )
 
+<size> ：closest-side | farthest-side | closest-corner | fatrhest-corner | <length> | <percentage>
 
+<shage> ：circle | ellipse
 
+`box-shadow`：none | inset | <length> | <color>
+
+# 浮动及其形状
+
+`float`：left | right | none
+
+`clear`：left | right | both | none
+
+`shape-outside`：none | [ <basic-shape> || <shape-box> ] | <image>
 
 
 
