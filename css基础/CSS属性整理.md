@@ -377,7 +377,19 @@ id选择器：`#testid`
 
 `shape-outside`：none | [ <basic-shape> || <shape-box> ] | <image>
 
+<basic-shape>：inset() | circle() | ellipse() | polygon()
 
+<shape-box>：margin-box | border-box | padding-box | content-box
+
+`shape-image-threshold`：<number>
+
+`shape-margin`：<length> | <percentage>
+
+# 定位
+
+`position`：static | relative | sticky | absolute | fixed
+
+`top`、`right`、`bottom`、`left`：<length> | <percentage> | auto
 
 
 
