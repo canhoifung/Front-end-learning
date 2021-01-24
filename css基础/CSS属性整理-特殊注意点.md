@@ -174,3 +174,24 @@
    1. 若祖辈为块级，容纳块为其内边距边界
    2. 若祖辈为行内，容纳块为其内容边界
    3. 若无祖辈，容纳块为初始容纳块
+2. `position:absolute`，且除`bottom`之外的某个偏移属性为auto时：
+   1. 顶边与假设定位元素`position:static`时的顶边对齐
+   2. 左右类似顶边规则
+3. 紧接规则2，对于非置换元素：
+   1. width和height设为auto意为自动缩放，自动包裹内容
+   2. 需要满足left + right + margin-left + border-left + padding-left + width + padding-right + border-right + margin-right = 容纳块宽度
+   3. 对于从左向右书写的语言，若不满足规则2，且全部是固定值，会自动将right设为auto，若纵向尺寸过约束了，则bottom的值会被自动计算
+4. 紧接规则2，对于置换元素：
+   1. width和height设为auto，则由元素内容的内在宽高决定具体宽高
+   2. 对从左向右的语言，若left为auto，则为静态位置
+   3. 若无法为静态位置仍然为auto，则margin-left的auto为0
+   4. 若margin-left和margin-right的值仍为auto，将二者设为相等
+   5. 若还有一个属性为auto，修改为满足等式的值
+   6. 若过约束，同规则3第四点
+5. 对相对定位而言，若偏移过约束，则将一个定位视为另一个定位的相反数，如bottom=-top，right=-left，需要考虑书写顺序，以上情况为从左到右书写时
+
+# 弹性盒布局
+
+1. `display:flex`或`display:inline-flex`
+2. `flex-direction:column`中`column`指当前书写模式下块级元素的移动方向，如英语中为纵轴，在日语中指横轴
+3. `flex-direction:row`指按照文本方向即书写模式布置弹性元素，因此不需要考虑文本是从左到右还是从右到左，row会自动转换弹性方向

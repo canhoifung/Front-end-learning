@@ -391,9 +391,23 @@ id选择器：`#testid`
 
 `top`、`right`、`bottom`、`left`：<length> | <percentage> | auto
 
+`min-width`、`min-height`：<length> | <percentage> 
 
+`max-width`、`max-height`：<length> | <percentage> | none
 
+`overflow`：visible | hidden | scroll | auto
 
+`visibility`：visible | hidden | collapse
+
+`z-index`：<integer> | auto
+
+# 弹性盒布局
+
+`flex-direction`：row | row-reverse | column | column-reverse
+
+`flex-wrap`：nowarp | warp | warp-reverse
+
+`flex-flow`：<flex-direction> || <flex-warp>
 
 
 
