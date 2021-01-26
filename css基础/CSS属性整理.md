@@ -409,5 +409,13 @@ id选择器：`#testid`
 
 `flex-flow`：<flex-direction> || <flex-warp>
 
+`justify-content`：flex-start | flex-end | center | space-between | space-around | space-evenly
 
+`align-items`：flex-start | flex-end | center | baseline | stretch
+
+`align-content`：flex-start | flex-end | space-between | space-around | space-evenly | stretch
+
+
+
+`align-self`：auto | flex-start | flex-end | center | baseline | stretch
 

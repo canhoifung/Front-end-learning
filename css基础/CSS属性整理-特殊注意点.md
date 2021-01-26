@@ -195,3 +195,8 @@
 1. `display:flex`或`display:inline-flex`
 2. `flex-direction:column`中`column`指当前书写模式下块级元素的移动方向，如英语中为纵轴，在日语中指横轴
 3. `flex-direction:row`指按照文本方向即书写模式布置弹性元素，因此不需要考虑文本是从左到右还是从右到左，row会自动转换弹性方向
+4. 若设置了min-height、min-width、max-height、max-width、width、height等属性，则`align-items:stretch`无效
+5. 对`align-items`的设置，要考虑元素的外边距
+6. `align-items:baseline`时，取在弹性元素行中，基线 和 垂轴起边那一侧 的 外边距边界 距离最远的弹性元素，然后将这个元素的 外边距外边界 和 弹性元素行的垂轴起边 对齐，其他弹性元素的基线和此时选中的弹性元素基线重合
+7. `align-content:stretch`时，额外空间会平均分给各个行
+8. 对于绝对定位的弹性元素，会从文档流中移除，但是初始定位仍然受`justify-content`和`align-self`影响，而浮动则不会有任何效果
