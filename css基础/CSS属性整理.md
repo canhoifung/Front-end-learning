@@ -419,3 +419,23 @@ id选择器：`#testid`
 
 `align-self`：auto | flex-start | flex-end | center | baseline | stretch
 
+`flex`：[ <flex-grow> <flex-shrink> ? || <flex-basis> ] | none | initial | auto
+
+`flex-grow`：<number>
+
+`flex-shrink`：<number>
+
+`flex-basis`：content | [ <length> | <percentage> ]
+
+`order`：<integer>
+
+# 栅格布局
+
+`grid-template-rows`：none | <track-list> | <auto-track-list>
+
+`grid-template-columns`：none | <track-list> | <auto-track-list>
+
+
+
+
+
