@@ -223,3 +223,7 @@
 1. `display:grid`或`display:inline-grid`
 2. 栅格容器不是块级容器，如其不会移动到浮动元素下方，且外边距不与后代外边距折叠
 3. 若栅格容器是浮动或绝对定位的，则对其设置`display:inline-grid`将会被解析为`display:grid`
+4. 使用方式：`grid-template-rows:[name1 name2] 200px [name3 name4] minmax(3em,4em) [name5]`
+5. `minmax(a,b)`中若最大值比最小值小，则最大值被忽略，且最小值不能使用`fr`单位
+6. 弹性栅格容器，分配行列使用单位`fr`，可与其他单位搭配使用
+7. 
