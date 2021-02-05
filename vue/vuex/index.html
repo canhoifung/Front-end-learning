@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/vue/dist/vue.js" type="text/javascript"></script>
+    <script src="https://unpkg.com/vuex"></script>
+    <title>Vuex 测试</title>
+</head>
+<body>
+    <div id="app">
+      <p>vuex test; now count is {{computedTest}}  
+        <button @click='count'>addCount</button>
+      </p>
+      <p>
+        gettodos <button @click='getTodos'>getTodos</button> 
+      </p>
+    </div>
+
+    <script>
+      //需要引入Vue，否则直接使用Vuex会报错
+      const store = new Vuex.Store({
+          state:{
+              count:0,
+              todos:[
+                {id:1,text:"...",done:true},
+                {id:2,text:"...",done:false},
+              ]
+          },
+          mutations:{
+              increment:state=>state.count++,
+          },
+          getters:{
+            doneTodos: state => {
+              return state.todos.filter(todo => todo.done);
+            }
+          },
+          actions:{
+            increment(context){
+              context.commit('increment')
+            },
+            incrementAsync ({ commit }) {
+              setTimeout(() => {
+                commit('increment')
+              },1000)
+            },
+          }
+      })
+      var app = new Vue({
+        el:"#app",
+        data:{
+          test:"testMessage"
+        },
+        store:store,
+        methods:{
+          count:function(){
+            this.$store.commit("increment");
+            this.$store.dispatch('incrementAsync')
+          },
+          getTodos:function(){
+            console.log(this.$store.getters.doneTodos);
+            console.log(this.$store.getters.doneTodos[0].id);
+          }
+        },
+        computed:{
+          computedTest:function(){
+            return this.$store.state.count
+          }
+        }
+      })
+    </script>
+</body>
+</html>

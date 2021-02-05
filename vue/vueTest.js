@@ -1,5 +1,5 @@
 //用于测试data
-
+import test from 'myComponents/myVueLifeCycleTest.vue'
 let vueData = new Vue({
     el: "#vueData",
     template: `

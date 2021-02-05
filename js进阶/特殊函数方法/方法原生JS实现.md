@@ -46,13 +46,13 @@ class _Promise{
         this.bindThis();//绑定this
 
         try{
-            handler(this.resolver,this.reject);
+            handler(this.resolve,this.reject);
         }catch(e){
             this.reject(error);
         };
     }
     bindThis(){
-        this.resolver = this.resolver.bind(this);
+        this.resolve = this.resolve.bind(this);
         this.reject = this.reject.bind(this);
     };
     initValue(){
