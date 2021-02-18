@@ -1192,7 +1192,7 @@ function setSort() {
 
 # 延时执行
 
-```
+```javascript
 // 比如 sleep(1000) 意味着等待1000毫秒，还可从 Promise、Generator、Async/Await 等角度实现。
 // Promise
 const sleep = time => {
