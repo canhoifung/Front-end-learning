@@ -721,7 +721,6 @@ regex.test(str); // false
 
 ```javascript
 var m = 'abcabc'.match(/(.)b(.)/);
-m
 // ['abc', 'a', 'c']
 //返回数组第一个值为匹配值
 //第二第三个为组匹配所匹配的值

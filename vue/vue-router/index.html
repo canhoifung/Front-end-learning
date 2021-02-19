@@ -16,32 +16,43 @@
           <!-- <router-link> 默认会被渲染成一个 `<a>` 标签 -->
           <router-link to="/foo.html">Go to Foo</router-link>
           <router-link to="/bar">Go to Bar</router-link>
-          <router-link to="/user/test">Go to User</router-link>
-          <router-link to="/user/test_type2">Go to User type2</router-link>
-          <router-link to="/user/test/user1/test111">Go to User1</router-link>
+          <router-link to="/user/child1">Go to User_child1</router-link>
+          <router-link to="/user/child2">Go to User_child2</router-link>
+          <router-link to="/routeProps">route Props Test</router-link>
         </p>
         <!-- 路由出口 -->
         <!-- 路由匹配到的组件将渲染在这里 -->
         <router-view>
         </router-view>
+        <router-view name = "viewa"></router-view>
+        <router-view name = "viewb"></router-view>
     </div>
     <script>
         // 0. 如果使用模块化机制编程，导入Vue和VueRouter，要调用 Vue.use(VueRouter)
 
         // 1. 定义 (路由) 组件。
         // 可以从其他文件 import 进来
-        const Foo = { template: '<div>foo111</div>' }
+        const Foo = { template: '<div>foo</div>' }
         const Bar = { template: '<div>bar</div>' }
         const User = { 
-            template: `<div>User  {{ $route.params.id}}</div>`,
-            watch:{
-                $route(to,from){
-                    console.log(to,"to");
-                    console.log(from,"from");
-                }
-            }
+            template: `
+            <div class="user">
+                <h2>User {{ $route.params.id }}</h2>
+                <router-view></router-view>
+            </div>
+            `,
+        };
+        const User_child1 = {
+            template: `<div>this is User_child1</div>`
+        };
+        const User_child2 = {
+            template: `<div>this is User_child2</div>`
         }
-        const User1 = { template: `<div>User111 {{ $route.params.id}}  {{ $route.params.user1_id}}</div>`}
+        const Bara = { template:'<div>this is bara</div>'}
+        const propsTest = {
+            props:["test"],
+            template:'<div>{{test}} this is a pro test</div>'
+        }
 
         // 2. 定义路由
         // 每个路由应该映射一个组件。 其中"component" 可以是
@@ -49,12 +60,20 @@
         // 或者，只是一个组件配置对象。
         // 我们晚点再讨论嵌套路由。
         const routes = [
-        { path: '/foo.html', component: Foo },
-        { path: '/bar', component: Bar },
-        { path: '/user/:id/user1/:user1_id', component: User1},
-        { path: '/user/:id', component: User},
-        ]
-
+        { path: '/foo.html', component: Foo ,redirect:'/bar'},
+        { path: '/bar', components: {
+            default:Bar,
+            viewa:Bara
+            }
+        },
+        { path: '/user', component: User,
+            children:[
+                { path: 'child1', component:User_child1},
+                { path: 'child2', component:User_child2},
+            ]
+        },
+        { path: '/routeProps', component: propsTest, props:(route)=>{console.log(route,'route');return {test:route.query.q+"666"}}}
+        ]   
         // 3. 创建 router 实例，然后传 `routes` 配置
         // 你还可以传别的配置参数, 不过先这么简单着吧。
         const router = new VueRouter({
