@@ -469,5 +469,15 @@ id选择器：`#testid`
 
 # 表格布局
 
+`caption-side`：top | bottom
 
+`border-collapse`：collapse | separate | inherit
+
+`border-spacing`：<length> <length> ? 
+
+`empty-cells`：show | hide
+
+`talbe-layout`：auto | fixed
+
+# 列表和生成的内容
 

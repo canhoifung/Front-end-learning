@@ -278,3 +278,42 @@ fit-content(argument) => min(max-content, max(min-content, argument));
    5. 若`table`、`inline-table`的子元素不是`table-row-group`、`table-header-group`、`table-footer-group`、`table-row`、`table-caption`，在`table`元素及其子元素之前插入一个匿名`table-row`对象，插入的对象包含除了以上五种以外的全部后续同辈元素
    6. 若`table-row-group`、`table-header-group`、`table-footer-group`的子元素不是`table-row`，在他们与子元素之间插入一个匿名`table-row`对象，该对象包含了子元素的全部后续同辈元素
    7. 若`table-row`的子元素不是`table-cell`，在其与子元素之间插入一个匿名`table-cell`，该对象包含子元素的全部后续同辈元素（该规则涵盖匿名行内框-如没有元素名的文本）
+   
+5. 表格层级关系，单元格>行>行组>列>列组>表格
+
+6. 在分离边框模式中，即`border-collapse:separate`，为行、行组、列、列组设置的边框将被忽略，同时`border-spacing`只能在表格声明
+
+7. 在折叠单元格模式中，即`border-collapse:collapse`：
+
+   1. table元素不能有内边距，可以有外边距
+   2. 行、行组、列、列组可以设置边框
+   3. 单元格之间边框没有间距
+   4. 边框折叠规则：
+      1. `border-style:hidden`的边框优先级最高，这个位置上的边框会被隐藏
+      2. 除规则1外，更宽的边框优先级更高
+      3. 若宽度相同但式样不同，优先级从大到小为：double、solid、dashed、dotted、ridge、outset、groove、inset、none
+      4. 若宽度样式都相同，但颜色不同，颜色优先级从高到低：单元格、行、行组、列、列组、表格，若类型相同，在从左向右书写的语言中取距离顶部和左边较远的边框
+
+8. 在固定宽度布局，即`table-layout:fixed`中：
+
+   1. 若列元素的`width`非`auto`，则设定为整列宽度
+   2. 若列元素的`width:auto`，若该列第一行的单元格的`width`非`auto`，则单元格宽度为整列宽度，若单元格跨列，则均分宽度
+   3. 若非情况1、2，则列宽度将自动确定，并尽可能保持各列宽度相等
+   4. 处理情况1、2、3后，表格宽度将由表格的`width`和列总宽中较大的决定
+
+9. 在自动宽度布局，即`table-layout:auto`中：
+
+   1. 计算一列中每一个单元格的最小宽度和最大宽度
+      1. 最小宽度即可换行但不能超出单元格框，若设置了`width`且比最小宽度大，则`width`为最小宽度
+      2. 最大宽度即除强制换行情况外不换行的情况下显示内容所需的宽度
+   2. 计算各列的最小宽度和最大宽度
+      1. 最小宽度=列中单元格最小宽度的最大值，若列显式设置了`width`且比最小宽度大，则`width`为最小宽度
+      2. 最大宽度=列中单元格最大宽度的最大值，若列显式设置了`width`且比最大宽度大，则`width`为最大宽度
+   3. 若单元格跨列，涉及那几列的最小宽度之和=单元格的最小宽度，最大宽度之和=单元格的最大宽度
+   4. 若表格的`width`非`auto`，表格最终宽度为这个`width`和每一列宽度之和+边框+单元格间距的较大值，若设置的`width`更大，则差值均分给各列
+   5. 若表格的`width:auto`，最终宽度=列宽度+边框+间距
+
+10. 表格的`height`更像是`min-height`
+
+# 列表和生成的内容
+
