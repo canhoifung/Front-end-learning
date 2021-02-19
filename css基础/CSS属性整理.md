@@ -435,9 +435,39 @@ id选择器：`#testid`
 
 `grid-template-columns`：none | <track-list> | <auto-track-list>
 
+`grid-template-areas`：none | <string>
 
+`grid-row-start`、`grid-row-end`、`grid-column-start`、`grid-column-end`：auto | <custom-ident> | [ <integer> && <custom-ident>? ] | [ span && [ <integer> || <custom-ident> ] ]
 
+`grid-row`、`grid-column`：<grid-line> [ / <grid-line> ] ?
 
+`grid-area`：<grid-line> [ / <grid-line> ] { 0, 3 }
+
+`grid-auto-flow`：[ row | column ] || dense
+
+`grid-auto-rows`、`grid-auto-columns`：<track-readth> | minmax( <track-breadth> , <track-breadth> )
+
+`grid`：none | subgrid | [ <grid-template-rows> / <grid-template-columns> ] | [ <line-names> ? <string> <track-size> ? <line-names> ? ] + [ / <track-lise> ] ? | [ <grid-auto-flow> [ <grid-auto-rows> [ / <grid-auto-columns> ] ? ] ? ] ]
+
+`grid-row-gap`、`gird-colummn-gap`：<length> | <percentage>
+
+`grip-gap`：<grid-row-gap> <grid-column-gap>
+
+`*`：`justify` | `align`
+
+`*-selft`：start | end | center | left | right | self-start | self-end | stretch
+
+​	`align-selft`：last-baseline | baseline
+
+`*-content`：space-between | space-around | space-evenly 
+
+`*-items`：start | end | center | left | right | self-start | self-end | stretch 
+
+`z-index`：<number>
+
+`order`：<integer>
+
+# 表格布局
 
 
 

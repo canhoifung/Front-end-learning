@@ -223,7 +223,58 @@
 1. `display:grid`或`display:inline-grid`
 2. 栅格容器不是块级容器，如其不会移动到浮动元素下方，且外边距不与后代外边距折叠
 3. 若栅格容器是浮动或绝对定位的，则对其设置`display:inline-grid`将会被解析为`display:grid`
-4. 使用方式：`grid-template-rows:[name1 name2] 200px [name3 name4] minmax(3em,4em) [name5]`
+4. 使用方式：`grid-template-rows:[name1 name2] 200px [name3 name4] minmax(3em,4em) [name5] min-content max-content minmax(0,max-content)`
 5. `minmax(a,b)`中若最大值比最小值小，则最大值被忽略，且最小值不能使用`fr`单位
 6. 弹性栅格容器，分配行列使用单位`fr`，可与其他单位搭配使用
-7. 
+7. 还可以设置值为`fit-content()`，规范给出的伪公式为：
+
+```javascript
+fit-content(argument) => min(max-content, max(min-content, argument));
+```
+
+8. 以上公式等价于`minmax(min-contetn, max-content)`，除非参数指定的值设置了更大的上限，类似`max-width`
+9. 设置重复轨道：`repeat(num,length)`，其中`length`可以不止一个值
+10. repeat的自动重复模式：`repeat(auto-fill, length)`
+11. 自动重复模式2：`repeat(auto-fit, length)`，但这个模式会剔除没有栅格元素的轨道，剔除后剩余轨道按照`align-content`和`justify-content`的值进行处理
+12. `gird-template-areas`区域只支持矩形，无法为L型或其他形状
+13. `grid-row-start`等属性的`span`值后跟正整数，意为向确定了编号的栅格线的反方向计数
+14. 若栅格元素超出了显式定义的栅格，超出部分为隐式栅格，需要注意使用`span`的话计算时是从显示栅格部分开始延伸，但不一定要在显示栅格部分结束
+15. `grid-area`属性顺序：`row-start`/`column-start`/`row-end`/`column-end`，缺少的值分别行列对应位置，若`start`为名称，则`end`为对应名称，若为数值，则为`auto`
+16. `grid-row-gap`和`grid-column-gap`值为非负数，且栏距要计算入`fr`的计算中
+17. 外边距为正时，元素可见部分在栅格区域中向内收缩，同理为负时向外伸展
+18. 外边距不影响栅格尺寸即`fr`的计算
+19. `algn-self`的`left`和`right`视作`start`处理
+20. `*-self:stretch`只有当`width`或`height`设为`auto`时才有效
+
+# 表格布局
+
+1. 指`display`值为`table`、`inilne-table`、`table-row`、`table-row-group`、`table-header-group`、`table-footer-group`、`table-column`、`table-column-group`、`table-cell`、`table-caption`
+
+2. ```css
+   talbe { display : table };
+   tr { display : table-row }；
+   thead { display : table-header-group };
+   tbody { display : table-row-group };
+   tfoot { display : table-footer-group };
+   col { display : table-column };
+   colgroup { display : table-column-group };
+   td, th { display : table-cell };
+   caption { display : table-caption };
+   ```
+
+3. 特殊属性设置：
+
+   1. `border`：仅当`border-collapse:collapse`时，才能为列和列组设置边框
+   2. `background`：仅当单元格及所在行背景为透明才显示列和列组的背景
+   3. `width`：定义的是列和列组的最小宽度，根据单元格内容有可能会迫使列变宽
+   4. `visibility`：若`visibility:collapse`，则列或列组的单元格不渲染，跨列的单元格会被裁剪
+   
+4. 对象插入规则：
+
+   1. 若`table-cell`元素的父元素不是`table-row`，在`table-cell`及其父元素之间插入一个匿名`talbe-row`对象，该对象包含`table-cell`元素及其全部后续同辈元素
+   2. 若`table-row`元素的父元素不是`talbe`、`inline-talbe`、`table-row-group`，在`table-row`元素及其父元素之间插入一个匿名`talbe`元素，插入对象包含`table-row`元素及其全部后续同辈元素
+   3. 规则2对于`talbe-column`元素同样
+   4. 若`table-row-group`、`table-header-group`、`table-footer-group`、`table-column-group`、`table-caption`元素的父元素不是`table`，则在该元素及其父元素之间插入一个匿名`table`对象
+   5. 若`table`、`inline-table`的子元素不是`table-row-group`、`table-header-group`、`table-footer-group`、`table-row`、`table-caption`，在`table`元素及其子元素之前插入一个匿名`table-row`对象，插入的对象包含除了以上五种以外的全部后续同辈元素
+   6. 若`table-row-group`、`table-header-group`、`table-footer-group`的子元素不是`table-row`，在他们与子元素之间插入一个匿名`table-row`对象，该对象包含了子元素的全部后续同辈元素
+   7. 若`table-row`的子元素不是`table-cell`，在其与子元素之间插入一个匿名`table-cell`，该对象包含子元素的全部后续同辈元素（该规则涵盖匿名行内框-如没有元素名的文本）
