@@ -481,3 +481,23 @@ id选择器：`#testid`
 
 # 列表和生成的内容
 
+`list-style-style`：disc | circle | square | ....
+
+`list-style-image`：<uri> | <image> | none | inherit
+
+`list-style-position`：inside | outside | inherit
+
+`list-style`：[ <list-style-type> || <list-style-image> || <list-style-position> ] | inherit
+
+`content`：normal | [ <string> | <uri> | <counter> | attr(<identifier>) | open-quote | close-quote | no-open-quote | no-close-quote ] + | inherit
+
+`quotes`：[ <string> <string> ] + | none | inherit
+
+`counter-reset`：[ <identifier> <integer>? ]+ | none | inherit
+
+`counter-increment`：[ <identifier> <integer>? ]+ | none | inherit
+
+`@counter-style <name>{}`：system | symbols | additive-symbols | prefix | suffix | negative | range | fallback | pad | speak-as 
+
+# 变形
+

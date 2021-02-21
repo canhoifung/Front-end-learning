@@ -317,3 +317,16 @@ fit-content(argument) => min(max-content, max(min-content, argument));
 
 # 列表和生成的内容
 
+1. `list-style-tpye`适用于`display:list-item`的元素上
+2. `list-style-type:none`只是不显示记号，但不会阻断有序列表的计数
+3. `::before`或`::after`选择符的目标为：
+   1. 块级元素，那么`display`只能为none、inline、block、marker，其余都视为block
+   2. 行内元素，那么`display`只能为none、inline，其余都视为inline
+4. `content`用法：
+   1. 可以通过这样插入属性值：`a[href]::after {content: “ [" attr(href) "]";}`，若属性不存在则为空字符串
+   2. `content:open-quote`和`content:close-quote`配合`quotes`属性使用
+   3. 若嵌套层级较多，`quotes`可以重复两个为一组的开头结尾引号内容，使用`open-quote`、`close-quote`时会调用对应层级的引号
+5. 可使用`@counter-style <name>`定义新的`list-style`值（浏览器不一定支持）
+
+# 变形
+
